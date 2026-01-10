@@ -19,8 +19,8 @@ final class AccountsCoordinator: Coordinator {
     func start() {
 
         let accounts = [
-            Account(id: .init(), name: "Main", type: .personal),
-            Account(id: .init(), name: "Business EU", type: .business),
+            Account(id: .init(), name: "Main"),
+            Account(id: .init(), name: "Business EU"),
         ]
 
         let accountsView = AccountsView(

@@ -10,5 +10,4 @@ import Foundation
 struct Account {
     let id: UUID
     let name: String
-    let type: AccountType
 }

@@ -23,7 +23,7 @@ struct AccountsCardsView: View {
             HStack {
                 
                 Text(accountName)
-                    .font(Font.system(size: 14))
+                    .font(Font.system(size: 16))
                     .foregroundColor(Color(red: 0.56, green: 0.56, blue: 0.58))
                 
                 Spacer()
@@ -58,7 +58,7 @@ struct AccountsCardsView: View {
                 
             }
             .foregroundColor(.primary)
-            .font(.system(size: 32))
+            .font(.system(size: 30))
 
         }
         .padding(.horizontal, 16)

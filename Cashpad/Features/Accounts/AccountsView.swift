@@ -12,56 +12,47 @@ struct AccountsView: View {
     @State private var showSettings = false
     @State private var showAnalythics = false
     
+    @Namespace private var settingsAnimation
+    
     let accounts: [Account]
     let onAccountSelected: (Account) -> Void
 
     var body: some View {
         
-        ZStack {
+        ZStack (alignment: .bottomTrailing) {
             
             VStack {
                 
-                AccountsNavigationBarView(showSettings: $showSettings)
+                AccountsNavigationBarView(showSettings: $showSettings, animation: settingsAnimation)
                 
                 AccountsCardsListView()
                 
             }
             .frame(maxWidth: .infinity)
-            
-        }
-        .background(Color("SecondaryBackground"))
-        
-    }
-}
+            .blur(radius: showSettings ? 8 : 0)
+            .allowsHitTesting(!showSettings)
 
-
-struct AccountsCardsListView: View {
-    
-    var body: some View {
-        
-        ScrollView {
-            
-            VStack (spacing: 24) {
-                
-                TotalAccountsBalanceView(currency: "$", balance: "770,231.21", trend: .same)
-                
-                VStack (spacing: 12) {
-                    AccountsCardsView(accountName: "Personal accound", currency: "$", balance: "330.24", trend: .lower, onDelete: {print("123")})
-                    AccountsCardsView(accountName: "Personal accound", currency: "$", balance: "330.24", trend: .same, onDelete: {print("123")})
-                    AccountsCardsView(accountName: "Personal accound", currency: "$", balance: "330.24", trend: .higher, onDelete: {print("123")})
-                    AccountsCardsView(accountName: "Personal accound", currency: "$", balance: "330.24", trend: .higher, onDelete: {print("123")})
-                    AccountsCardsView(accountName: "Personal accound", currency: "$", balance: "330.24", trend: .higher, onDelete: {print("123")})
-                    AccountsCardsView(accountName: "Personal accound", currency: "$", balance: "330.24", trend: .higher, onDelete: {print("123")})
-                    AccountsCardsView(accountName: "Personal accound", currency: "$", balance: "330.24", trend: .higher, onDelete: {print("123")})
-                }
-                
+            AddButtonView(onAction: {print("button tapped")})
+                        
+            if showSettings {
+                SettingsModalView(
+                    showSettings: $showSettings,
+                    animation: settingsAnimation
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    Color.black.opacity(0.2)
+                        .ignoresSafeArea()
+                        .onTapGesture { showSettings = false }
+                )
             }
-            .padding()
             
         }
-        
+        .animation(.spring(response: 0.45, dampingFraction: 0.85), value: showSettings)
+        .background(Color("SecondaryBackground"))
     }
 }
+
 
 
 #Preview {

@@ -32,6 +32,7 @@ struct AccountsCardsView: View {
                     Image(systemName: trend.symbolName)
                         .foregroundColor(trend.color)
                         .font(.system(size: 14, weight: .semibold))
+                        .symbolRenderingMode(.hierarchical)
                     
                     Menu {
                         Button(role: .destructive) {

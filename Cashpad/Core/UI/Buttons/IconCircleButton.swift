@@ -17,9 +17,10 @@ struct IconCircleButton: View {
             action()
         } label: {
             Image(systemName: systemName)
+                .padding(.horizontal, 2)
+                .padding(.vertical, 6)
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundColor(.primary)
-                .frame(width: 38, height: 38)
                 .glassButtonBackgroundIfAvailable()
         }
         .glassButtonStyleIfAvailable()

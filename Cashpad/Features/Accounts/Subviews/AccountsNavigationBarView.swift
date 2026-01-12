@@ -10,6 +10,7 @@ import SwiftUI
 struct AccountsNavigationBarView: View {
 
     @Binding var showSettings: Bool
+    @Binding var showAnalytics: Bool
     let animation: Namespace.ID
 
     var body: some View {
@@ -24,7 +25,15 @@ struct AccountsNavigationBarView: View {
 
                 IconCircleButton(
                     systemName: "chart.line.uptrend.xyaxis",
-                    action: { print("123") }
+                    action: {
+                        guard !showAnalytics else { return }
+                        showAnalytics = true
+                    }
+                )
+                .matchedGeometryEffect(
+                    id: "analytics",
+                    in: animation,
+                    isSource: !showAnalytics
                 )
 
                 IconCircleButton(
@@ -34,7 +43,11 @@ struct AccountsNavigationBarView: View {
                         showSettings = true
                     }
                 )
-                .matchedGeometryEffect(id: "settings", in: animation, isSource: !showSettings)
+                .matchedGeometryEffect(
+                    id: "settings",
+                    in: animation,
+                    isSource: !showSettings
+                )
 
             }
 

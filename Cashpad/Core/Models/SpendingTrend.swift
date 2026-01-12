@@ -16,11 +16,11 @@ enum SpendingTrend {
     var symbolName: String {
         switch self {
         case .higher:
-            return "arrow.up"
+            return "chart.line.downtrend.xyaxis"
         case .lower:
-            return "arrow.down"
+            return "chart.line.uptrend.xyaxis"
         case .same:
-            return "minus"
+            return "chart.line.flattrend.xyaxis"
         }
     }
 

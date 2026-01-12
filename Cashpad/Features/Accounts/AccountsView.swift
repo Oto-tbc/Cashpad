@@ -10,9 +10,9 @@ import SwiftUI
 struct AccountsView: View {
 
     @State private var showSettings = false
-    @State private var showAnalythics = false
+    @State private var showAnalytics = false
     
-    @Namespace private var settingsAnimation
+    @Namespace private var modalAnimation
     
     let accounts: [Account]
     let onAccountSelected: (Account) -> Void
@@ -23,21 +23,21 @@ struct AccountsView: View {
             
             VStack {
                 
-                AccountsNavigationBarView(showSettings: $showSettings, animation: settingsAnimation)
+                AccountsNavigationBarView(showSettings: $showSettings, showAnalytics: $showAnalytics, animation: modalAnimation)
                 
                 AccountsCardsListView()
                 
             }
             .frame(maxWidth: .infinity)
-            .blur(radius: showSettings ? 8 : 0)
-            .allowsHitTesting(!showSettings)
+            .blur(radius: showSettings || showAnalytics ? 8 : 0)
+            .allowsHitTesting(!(showSettings || showAnalytics))
 
             AddButtonView(onAction: {print("button tapped")})
                         
             if showSettings {
                 SettingsModalView(
                     showSettings: $showSettings,
-                    animation: settingsAnimation
+                    animation: modalAnimation
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(
@@ -47,8 +47,21 @@ struct AccountsView: View {
                 )
             }
             
+            if showAnalytics {
+                AnalyticsModalView(
+                    showAnalytics: $showAnalytics,
+                    animation: modalAnimation
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    Color.black.opacity(0.2)
+                        .ignoresSafeArea()
+                        .onTapGesture { showAnalytics = false }
+                )
+            }
+            
         }
-        .animation(.spring(response: 0.45, dampingFraction: 0.85), value: showSettings)
+        .animation(.spring(response: 0.45, dampingFraction: 0.85), value: showSettings || showAnalytics)
         .background(Color("SecondaryBackground"))
     }
 }

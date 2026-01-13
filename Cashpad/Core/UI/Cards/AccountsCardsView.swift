@@ -13,6 +13,8 @@ struct AccountsCardsView: View {
     let currency: String
     let balance: String
     let trend: SpendingTrend
+    let color: AccountColor
+    let icon: AccountIcon
     
     let onDelete: () -> Void
 
@@ -22,9 +24,14 @@ struct AccountsCardsView: View {
             
             HStack {
                 
-                Text(accountName)
-                    .font(Font.system(size: 16))
-                    .foregroundColor(Color(red: 0.56, green: 0.56, blue: 0.58))
+                HStack {
+                    Image(systemName: icon.rawValue)
+                        .foregroundStyle(color.color)
+                    
+                    Text(accountName)
+                        .font(Font.system(size: 16))
+                        .foregroundColor(Color(red: 0.56, green: 0.56, blue: 0.58))
+                }
                 
                 Spacer()
                 

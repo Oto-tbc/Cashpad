@@ -5,26 +5,29 @@
 //  Created by Oto Sharvashidze on 06.01.26.
 //
 
-import UIKit
+import CoreData
 import SwiftUI
+import UIKit
 
 final class AccountsCoordinator: Coordinator {
 
     var navigationController: UINavigationController
+    private let diContainer: AppDIContainer
 
-    init(navigationController: UINavigationController) {
+    init(
+        navigationController: UINavigationController,
+        diContainer: AppDIContainer = .shared
+    ) {
         self.navigationController = navigationController
+        self.diContainer = diContainer
     }
 
     func start() {
 
-        let accounts = [
-            Account(id: .init(), name: "Main"),
-            Account(id: .init(), name: "Business EU"),
-        ]
+        let viewModel = diContainer.makeAccountsViewModel()
 
         let accountsView = AccountsView(
-            accounts: accounts,
+            viewModel: viewModel,
             onAccountSelected: { [weak self] account in
                 self?.showBalance(for: account)
             }
@@ -34,7 +37,7 @@ final class AccountsCoordinator: Coordinator {
         navigationController.setViewControllers([hostingVC], animated: false)
     }
 
-    private func showBalance(for account: Account) {
+    private func showBalance(for account: AccountModel) {
         let coordinator = BalanceCoordinator(
             navigationController: navigationController,
             account: account

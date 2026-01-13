@@ -36,7 +36,7 @@ struct SettingsModalView: View {
 
             Divider()
 
-            Text("Settings content goes here")
+            Text("in progress...")
                 .foregroundStyle(.secondary)
 
             Spacer()

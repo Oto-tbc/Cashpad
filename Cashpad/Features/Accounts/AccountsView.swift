@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct AccountsView: View {
+    
+    @ObservedObject var viewModel: AccountsViewModel
 
     @State private var showSettings = false
     @State private var showAnalytics = false
+    @State private var showAddAccountSheet = false
     
     @Namespace private var modalAnimation
     
-    let accounts: [Account]
-    let onAccountSelected: (Account) -> Void
+    let onAccountSelected: (AccountModel) -> Void
 
     var body: some View {
         
@@ -25,14 +27,14 @@ struct AccountsView: View {
                 
                 AccountsNavigationBarView(showSettings: $showSettings, showAnalytics: $showAnalytics, animation: modalAnimation)
                 
-                AccountsCardsListView()
+                AccountsCardsListView(viewModel: viewModel, onAccountSelected: onAccountSelected)
                 
             }
             .frame(maxWidth: .infinity)
             .blur(radius: showSettings || showAnalytics ? 8 : 0)
             .allowsHitTesting(!(showSettings || showAnalytics))
 
-            AddButtonView(onAction: {print("button tapped")})
+            AddButtonView(onAction: { showAddAccountSheet = true })
                         
             if showSettings {
                 SettingsModalView(
@@ -61,19 +63,29 @@ struct AccountsView: View {
             }
             
         }
+        .onAppear {
+            viewModel.loadAccounts()
+        }
         .animation(.spring(response: 0.45, dampingFraction: 0.85), value: showSettings || showAnalytics)
         .background(Color("SecondaryBackground"))
-    }
-}
-
-
-
-#Preview {
-    let sampleAccounts: [Account] = [
-        Account(id: UUID(), name: "Checking"),
-        Account(id: UUID(), name: "Savings")
-    ]
-    AccountsView(accounts: sampleAccounts) { account in
-        print("Selected: \(account.name)")
+        .sheet(isPresented: $showAddAccountSheet) {
+            AddAccountSheet(
+                onSave: { name, currency, emoji, color, initialBalance in
+                    viewModel.addAccount(
+                        name: name,
+                        currency: currency,
+                        emoji: emoji,
+                        color: color,
+                        initialBalance: initialBalance
+                    )
+                    showAddAccountSheet = false
+                },
+                onCancel: {
+                    showAddAccountSheet = false
+                }
+            )
+            .presentationDetents([.fraction(0.95)])
+            .presentationDragIndicator(.visible)
+        }
     }
 }

@@ -1,0 +1,77 @@
+//
+//  AccountRepoistory.swift
+//  Cashpad
+//
+//  Created by Oto Sharvashidze on 12.01.26.
+//
+
+import CoreData
+
+protocol AccountRepositoryProtocol {
+    func fetchAccounts() throws -> [Account]
+    func createAccount(
+        name: String,
+        currency: String,
+        emoji: String?,
+        color: String?
+    ) throws -> Account
+    func deleteAccount(_ account: Account) throws
+    func addInitialTransaction(
+        to account: Account,
+        amount: Double
+    ) throws
+}
+
+final class AccountRepository: AccountRepositoryProtocol {
+
+    private let context: NSManagedObjectContext
+
+    init(context: NSManagedObjectContext) {
+        self.context = context
+    }
+
+    func fetchAccounts() throws -> [Account] {
+        let request: NSFetchRequest<Account> = Account.fetchRequest()
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "createdAt", ascending: true)
+        ]
+        return try context.fetch(request)
+    }
+
+    func createAccount(
+        name: String,
+        currency: String,
+        emoji: String?,
+        color: String?
+    ) throws -> Account {
+        let account = Account(context: context)
+        account.id = UUID()
+        account.name = name
+        account.currency = currency
+        account.emoji = emoji
+        account.color = color
+        account.createdAt = Date()
+
+        try context.save()
+        return account
+    }
+    
+    func addInitialTransaction(
+        to account: Account,
+        amount: Double
+    ) throws {
+        let transaction = Transaction(context: context)
+        transaction.id = UUID()
+        transaction.amount = amount
+        transaction.date = Date()
+        transaction.type = 0
+        transaction.account = account
+
+        try context.save()
+    }
+    
+    func deleteAccount(_ account: Account) throws {
+        context.delete(account)
+        try context.save()
+    }
+}

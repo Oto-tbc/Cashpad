@@ -9,9 +9,9 @@ import UIKit
 
 final class BalanceViewController: UIViewController {
 
-    private let account: Account
+    private let account: AccountModel
 
-    init(account: Account) {
+    init(account: AccountModel) {
         self.account = account
         super.init(nibName: nil, bundle: nil)
     }

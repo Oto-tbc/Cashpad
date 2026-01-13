@@ -10,11 +10,11 @@ import UIKit
 final class BalanceCoordinator: Coordinator {
 
     var navigationController: UINavigationController
-    let account: Account
+    let account: AccountModel
 
     init(
         navigationController: UINavigationController,
-        account: Account
+        account: AccountModel
     ) {
         self.navigationController = navigationController
         self.account = account

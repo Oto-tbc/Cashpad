@@ -29,14 +29,14 @@ struct AnalyticsModalView: View {
                 
                 Spacer()
                 
-                Text("Settings")
+                Text("Analytics")
                     .font(.title2.bold())
 
             }
 
             Divider()
 
-            Text("Settings content goes here")
+            Text("in progress...")
                 .foregroundStyle(.secondary)
 
             Spacer()

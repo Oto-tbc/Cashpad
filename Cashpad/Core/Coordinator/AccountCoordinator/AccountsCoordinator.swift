@@ -29,6 +29,7 @@ final class AccountsCoordinator: Coordinator {
         let accountsView = AccountsView(
             viewModel: viewModel,
             onAccountSelected: { [weak self] account in
+                print("Account tapped")
                 self?.showBalance(for: account)
             }
         )
@@ -38,6 +39,9 @@ final class AccountsCoordinator: Coordinator {
     }
 
     private func showBalance(for account: AccountModel) {
+        print("NAV VC:", navigationController)
+        print("TOP VC:", navigationController.topViewController as Any)
+        
         let coordinator = BalanceCoordinator(
             navigationController: navigationController,
             account: account

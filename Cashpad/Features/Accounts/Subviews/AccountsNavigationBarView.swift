@@ -30,12 +30,10 @@ struct AccountsNavigationBarView: View {
                         showAnalytics = true
                     }
                 )
-                .matchedGeometryEffect(
-                    id: "analytics",
-                    in: animation,
-                    isSource: !showAnalytics
-                )
-
+                .applyIf(!showAnalytics) {
+                    $0.matchedGeometryEffect(id: "analyticsGlass", in: animation)
+                }
+                
                 IconCircleButton(
                     systemName: "gearshape",
                     action: {
@@ -43,18 +41,15 @@ struct AccountsNavigationBarView: View {
                         showSettings = true
                     }
                 )
-                .matchedGeometryEffect(
-                    id: "settings",
-                    in: animation,
-                    isSource: !showSettings
-                )
-
+                .applyIf(!showSettings) {
+                    $0.matchedGeometryEffect(id: "settingsGlass", in: animation)
+                }
             }
 
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 18)
-        .padding(.top, -22)
+        .padding(.top, -18)
         .background(Color("Background"))
     }
 }

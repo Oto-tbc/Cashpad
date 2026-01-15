@@ -41,15 +41,13 @@ struct SettingsModalView: View {
 
             Spacer()
         }
-        .padding(24)
-        .frame(
-            maxWidth: UIScreen.main.bounds.width - 20,
-            maxHeight: UIScreen.main.bounds.height
-        )
+        .padding()
         .background(
             RoundedRectangle(cornerRadius: 28)
-                .fill(Color("SecondaryBackground"))
-                .matchedGeometryEffect(id: "settings", in: animation, isSource: showSettings)
+                .fill(.ultraThinMaterial)
+                .matchedGeometryEffect(id: "settingsGlass", in: animation)
         )
+        .ignoresSafeArea(edges: .bottom)
+        .padding(.horizontal, 5)
     }
 }

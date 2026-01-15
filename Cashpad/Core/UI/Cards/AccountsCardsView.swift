@@ -8,39 +8,41 @@
 import SwiftUI
 
 struct AccountsCardsView: View {
-    
+
     let accountName: String
     let currency: String
     let balance: String
     let trend: SpendingTrend
     let color: AccountColor
     let icon: AccountIcon
-    
+
     let onDelete: () -> Void
 
     var body: some View {
 
         VStack(alignment: .leading, spacing: 16) {
-            
+
             HStack {
-                
+
                 HStack {
                     Image(systemName: icon.rawValue)
                         .foregroundStyle(color.color)
-                    
+
                     Text(accountName)
                         .font(Font.system(size: 16))
-                        .foregroundColor(Color(red: 0.56, green: 0.56, blue: 0.58))
+                        .foregroundColor(
+                            Color(red: 0.56, green: 0.56, blue: 0.58)
+                        )
                 }
-                
+
                 Spacer()
-                
+
                 HStack {
                     Image(systemName: trend.symbolName)
                         .foregroundColor(trend.color)
                         .font(.system(size: 14, weight: .semibold))
                         .symbolRenderingMode(.hierarchical)
-                    
+
                     Menu {
                         Button(role: .destructive) {
                             onDelete()
@@ -56,17 +58,10 @@ struct AccountsCardsView: View {
                     }
                 }
             }
-                
-                
-            HStack() {
-                
-                Text(currency)
-                +
-                Text(balance)
-                
-            }
-            .foregroundColor(.primary)
-            .font(.system(size: 30))
+
+            Text("\(currency)\(balance)")
+                .foregroundColor(.primary)
+                .font(.system(size: 30))
 
         }
         .padding(.horizontal, 16)

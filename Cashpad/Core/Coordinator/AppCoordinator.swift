@@ -11,14 +11,17 @@ final class AppCoordinator: Coordinator {
 
     var navigationController: UINavigationController
 
+    private var accountsCoordinator: AccountsCoordinator?
+
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
 
     func start() {
-        let accountsCoordinator = AccountsCoordinator(
+        let coordinator = AccountsCoordinator(
             navigationController: navigationController
         )
-        accountsCoordinator.start()
+        self.accountsCoordinator = coordinator
+        coordinator.start()
     }
 }

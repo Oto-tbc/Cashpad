@@ -11,18 +11,19 @@ struct IconCircleButton: View {
 
     let systemName: String
     let action: () -> Void
-
+    
     var body: some View {
         Button {
             action()
         } label: {
-            Image(systemName: systemName)
-                .padding(.horizontal, 2)
-                .padding(.vertical, 6)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundColor(.primary)
-                .glassButtonBackgroundIfAvailable()
+            ZStack {
+                Image(systemName: systemName)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.primary)
+            }
+            .frame(width: 38, height: 38)
         }
-        .glassButtonStyleIfAvailable()
+        .buttonStyle(.glass)
+        .buttonBorderShape(.circle)
     }
 }

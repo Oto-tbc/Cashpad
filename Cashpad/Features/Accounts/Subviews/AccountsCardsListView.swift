@@ -52,6 +52,7 @@ struct AccountsCardsListView: View {
                         )
                         .onTapGesture {
                             onAccountSelected(account)
+                            print("123")
                         }
                     }
                 }

@@ -41,15 +41,13 @@ struct AnalyticsModalView: View {
 
             Spacer()
         }
-        .padding(24)
-        .frame(
-            maxWidth: UIScreen.main.bounds.width - 20,
-            maxHeight: UIScreen.main.bounds.height
-        )
+        .padding()
         .background(
             RoundedRectangle(cornerRadius: 28)
-                .fill(Color("SecondaryBackground"))
-                .matchedGeometryEffect(id: "analytics", in: animation, isSource: showAnalytics)
+                .fill(.ultraThinMaterial)
+                .matchedGeometryEffect(id: "analyticsGlass", in: animation)
         )
+        .ignoresSafeArea(edges: .bottom)
+        .padding(.horizontal, 5)
     }
 }

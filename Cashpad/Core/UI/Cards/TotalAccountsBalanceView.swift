@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TotalAccountsBalanceView: View {
-    
+
     let currency: String
     let balance: String
     let trend: SpendingTrend
@@ -16,28 +16,26 @@ struct TotalAccountsBalanceView: View {
     var body: some View {
 
         VStack(alignment: .leading, spacing: 12) {
-            
+
             HStack {
                 Text("Total Balance")
                     .font(Font.system(size: 14))
-                    .foregroundColor(Color(red: 1, green: 1, blue: 1).opacity(0.8))
-                
+                    .foregroundColor(
+                        Color(red: 1, green: 1, blue: 1).opacity(0.8)
+                    )
+
                 Spacer()
-                
+
                 Image(systemName: trend.symbolName)
                     .foregroundColor(trend.color)
                     .font(.system(size: 14, weight: .semibold))
                     .symbolRenderingMode(.hierarchical)
             }
-            
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(currency)
-                +
-                Text(balance)
-            }
-            .foregroundColor(.white)
-            .font(.system(size: 32))
-            
+
+            Text("\(currency)\(balance)")
+                .foregroundColor(.white)
+                .font(.system(size: 32))
+
         }
         .padding(.horizontal, 24)
         .padding(.top, 24)

@@ -17,6 +17,5 @@ struct AccountModel: Identifiable, Hashable {
     let color: String?
     let createdAt: Date
 
-    /// Computed values for UI only
     let balance: Double
 }

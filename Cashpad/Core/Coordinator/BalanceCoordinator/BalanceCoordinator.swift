@@ -10,10 +10,12 @@ import UIKit
 final class BalanceCoordinator: Coordinator {
     
     private let diContainer: AppDIContainer
-
+    
     var navigationController: UINavigationController
     let account: AccountModel
-
+    
+    var onFinish: (() -> Void)?
+    
     init(
         navigationController: UINavigationController,
         account: AccountModel,
@@ -23,12 +25,18 @@ final class BalanceCoordinator: Coordinator {
         self.account = account
         self.diContainer = diContainer
     }
-
+    
     func start() {
         let viewModel = diContainer.makeBalanceViewModel(accountId: account.id)
+        
         let vc = BalanceViewController(
             account: account,
-            viewModel: viewModel
+            viewModel: viewModel,
+            onBack: { [weak self] in
+                self?.navigationController.popViewController(animated: true)
+                self?.onFinish?()
+            }
         )
         navigationController.pushViewController(vc, animated: true)
-    }}
+    }
+}

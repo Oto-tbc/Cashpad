@@ -40,7 +40,8 @@ struct AccountsView: View {
             .frame(maxWidth: .infinity)
             .blur(radius: showSettings || showAnalytics ? 8 : 0)
             .allowsHitTesting(!(showSettings || showAnalytics))
-
+            .navigationBarHidden(true)
+            
             AddButtonView(onAction: { showAddAccountSheet = true })
 
             if showSettings {
@@ -84,3 +85,4 @@ struct AccountsView: View {
         }
     }
 }
+

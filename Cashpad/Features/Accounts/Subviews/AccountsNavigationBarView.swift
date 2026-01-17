@@ -47,9 +47,7 @@ struct AccountsNavigationBarView: View {
             }
 
         }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 18)
-        .padding(.top, -18)
+        .padding(24)
         .background(Color("Background"))
     }
 }

@@ -9,55 +9,49 @@ import UIKit
 
 final class BalanceView: UIView {
 
-    // MARK: - UI
+    private let navigationView = BalanceNavigationView()
+    private let balanceView = CurrentBalanceView()
 
-    private let titleLabel = UILabel()
-    private let balanceLabel = UILabel()
-
-    // MARK: - Init
+    private var onBack: (() -> Void)?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupView()
-        setupLayout()
+        setup()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Setup
+    private func setup() {
+        addSubview(navigationView)
+        addSubview(balanceView)
 
-    private func setupView() {
-        backgroundColor = .systemGroupedBackground
-
-        titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
-        titleLabel.textColor = .secondaryLabel
-
-        balanceLabel.font = .systemFont(ofSize: 32, weight: .bold)
-        balanceLabel.textColor = .label
-    }
-
-    private func setupLayout() {
-        addSubview(titleLabel)
-        addSubview(balanceLabel)
-
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        balanceLabel.translatesAutoresizingMaskIntoConstraints = false
+        navigationView.translatesAutoresizingMaskIntoConstraints = false
+        balanceView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 24),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-
-            balanceLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            balanceLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor)
+            navigationView.topAnchor.constraint(equalTo: topAnchor),
+            navigationView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            navigationView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            navigationView.heightAnchor.constraint(equalToConstant: 190),
+            
+            balanceView.topAnchor.constraint(equalTo: navigationView.bottomAnchor),
+            balanceView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            balanceView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            balanceView.heightAnchor.constraint(equalToConstant: 130)
         ])
     }
 
-    // MARK: - Bind
-
-    func configure(account: AccountModel) {
-        titleLabel.text = account.name
-        balanceLabel.text = "\(account.balance) \(account.currency)"
+    func configure(
+        account: AccountModel,
+        onBack: @escaping () -> Void
+    ) {
+        navigationView.configure(title: account.name)
+        navigationView.onBack = onBack
+        
+        let currency = Currency(rawValue: account.currency) ?? .usd
+        balanceView.configure(balance: account.balance, currency: currency.symbol)
     }
+    
 }

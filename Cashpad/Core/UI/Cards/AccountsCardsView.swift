@@ -53,16 +53,24 @@ struct AccountsCardsView: View {
                         Image(systemName: "ellipsis")
                             .rotationEffect(.degrees(90))
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondary)
                             .frame(width: 32, height: 32)
                     }
                 }
             }
 
-            Text("\(currency)\(balance)")
-                .foregroundColor(.primary)
-                .font(.system(size: 30))
-
+            HStack {
+                Text("\(currency)\(balance)")
+                    .foregroundColor(.primary)
+                    .font(.system(size: 30))
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.primary)
+                    .font(.system(size: 18, weight: .regular))
+            }
+            .padding(.trailing, 16)
         }
         .padding(.horizontal, 16)
         .padding(.top, 16)

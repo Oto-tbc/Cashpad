@@ -16,7 +16,9 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     private let viewModel: BalanceViewModel
     private var cancellables = Set<AnyCancellable>()
     
-    private let contentView = BalanceView()
+    private let balanceView = BalanceView()
+    private var chartHostingController: UIHostingController<ChartView>?
+    private var transactionsHostingController: UIHostingController<TransactionsView>?
     
     private let onBack: () -> Void
     
@@ -35,24 +37,21 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: - Lifecycle
-    override func loadView() {
-        view = contentView
-    }
-    
+        
     // Setup UI, bindings, and initial data loading
     override func viewDidLoad() {
         super.viewDidLoad()
         title = account.name
         view.backgroundColor = UIColor(named: "SecondaryBackground")
-        contentView.configure(
+        balanceView.configure(
             account: account,
             onBack: onBack
         )
+        setupBalanceView()
+        setupChart()
         setupTransactionsView()
-        viewModel.loadTransactions()
         bindViewModel()
+        viewModel.loadTransactions()
     }
     
     // Enable interactive pop gesture when view appears
@@ -75,25 +74,64 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     }
     
     // MARK: - SwiftUI Embedding
+    
+    private func setupBalanceView() {
+        view.addSubview(balanceView)
+        balanceView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            balanceView.topAnchor.constraint(equalTo: view.topAnchor),
+            balanceView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            balanceView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            balanceView.heightAnchor.constraint(equalToConstant: 160)
+        ])
+    }
+    
+    private func setupChart() {
+        // Build ChartViewModel via DI using the selected account id
+        let chartVM = AppDIContainer.shared.makeChartViewModel(accountId: account.id)
+        let chartView = ChartView(viewModel: chartVM)
+        let hosting = UIHostingController(rootView: chartView)
+        chartHostingController = hosting
+
+        addChild(hosting)
+        view.addSubview(hosting.view)
+
+        hosting.view.translatesAutoresizingMaskIntoConstraints = false
+        hosting.view.backgroundColor = .clear
+
+        // Place chart below balanceView
+        NSLayoutConstraint.activate([
+            hosting.view.topAnchor.constraint(equalTo: balanceView.bottomAnchor),
+            hosting.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hosting.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hosting.view.heightAnchor.constraint(equalToConstant: 240)
+        ])
+
+        hosting.didMove(toParent: self)
+    }
+    
     // Embeds TransactionsView (SwiftUI) into UIKit using UIHostingController
     private func setupTransactionsView() {
         let transactionsView = TransactionsView(viewModel: viewModel)
-        let hostingController = UIHostingController(rootView: transactionsView)
+        let hosting = UIHostingController(rootView: transactionsView)
+        transactionsHostingController = hosting
 
-        addChild(hostingController)
-        view.addSubview(hostingController.view)
+        addChild(hosting)
+        view.addSubview(hosting.view)
 
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        hostingController.view.backgroundColor = .clear
+        hosting.view.translatesAutoresizingMaskIntoConstraints = false
+        hosting.view.backgroundColor = .clear
 
+        guard let chartView = chartHostingController?.view else { return }
+
+        // Pin transactions view below chart and stretch to bottom
         NSLayoutConstraint.activate([
-            hostingController.view.heightAnchor.constraint(equalToConstant: 400),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            hosting.view.topAnchor.constraint(equalTo: chartView.bottomAnchor, constant: 12),
+            hosting.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hosting.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
 
-        hostingController.didMove(toParent: self)
+        hosting.didMove(toParent: self)
     }
     
     // MARK: - Bindings
@@ -113,11 +151,15 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     // MARK: - UI Updates
     // Calculates and displays the account balance
     private func updateBalance(from transactions: [Transaction]) {
-        let balance = transactions.reduce(0) { $0 + $1.amount }
+        let balance = transactions.reduce(0) { result, transaction in
+            transaction.type == 0
+                ? result + transaction.amount
+                : result - transaction.amount
+        }
         
         let currency = Currency(rawValue: account.currency) ?? .usd
         
-        contentView.updateBalance(
+        balanceView.updateBalance(
             balance: balance,
             currency: currency.symbol
         )

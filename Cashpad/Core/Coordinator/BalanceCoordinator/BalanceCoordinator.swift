@@ -32,9 +32,9 @@ final class BalanceCoordinator: Coordinator {
             accountId: account.id
         )
         
-        let transactionsViewModel = diContainer.makeBalanceViewModel(
-            accountId: account.id
-        )
+//        let transactionsViewModel = diContainer.makeBalanceViewModel(
+//            accountId: account.id
+//        )
                 
         let vc = BalanceViewController(
             account: account,

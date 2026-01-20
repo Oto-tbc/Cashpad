@@ -1,0 +1,209 @@
+import Combine
+import Foundation
+import SwiftUI
+
+@MainActor
+final class ChartViewModel: ObservableObject {
+    // MARK: - Dependencies
+    private let accountId: UUID
+    private let transactionRepository: TransactionRepositoryProtocol
+
+    // MARK: - Published State
+    @Published var selectedFlow: Flow = .expense { didSet { cachedAggregated.removeAll() } }
+    @Published var selectedGranularity: Granularity = .week { didSet { cachedAggregated.removeAll() } }
+    @Published var currentAnchorDate: Date = Date() { didSet { cachedAggregated.removeAll() } }
+    @Published var selectedTX: Transaction?
+    @Published private(set) var transactions: [Transaction] = []
+
+    // MARK: - Init
+    init(accountId: UUID, transactionRepository: TransactionRepositoryProtocol) {
+        self.accountId = accountId
+        self.transactionRepository = transactionRepository
+        self.transactions = []
+        loadTransactions()
+    }
+
+    func loadTransactions() {
+        do {
+            let coreDataTransactions = try transactionRepository.fetchTransactions(accountId: accountId)
+            self.transactions = coreDataTransactions
+            cachedAggregated.removeAll()
+        } catch {
+            self.transactions = []
+            cachedAggregated.removeAll()
+        }
+    }
+
+    // MARK: - Calendar & Cache
+    private let calendar = Calendar.current
+
+    private struct PeriodKey: Hashable {
+        let flow: Flow
+        let granularity: Granularity
+        let anchorDay: Date // normalized to start of period
+    }
+
+    private var cachedAggregated: [PeriodKey: [(date: Date, total: Double)]] = [:]
+
+    // MARK: - Derived Data
+    /// Transactions filtered by flow (income/expense)
+    var filtered: [Transaction] {
+        let type = (selectedFlow == .income) ? 0 : 1
+        return transactions
+            .lazy
+            .filter { Int($0.type) == type }
+            .sorted { ($0.date ?? Date.distantPast) < ($1.date ?? Date.distantPast) }
+    }
+
+    var periodRange: Range<Date> {
+        let lower = normalizedAnchorStart()
+        let upper: Date
+        switch selectedGranularity {
+        case .day:
+            upper = calendar.date(byAdding: .day, value: 1, to: lower) ?? lower
+        case .week:
+            upper = calendar.date(byAdding: .weekOfYear, value: 1, to: lower) ?? lower
+        case .year:
+            upper = calendar.date(byAdding: .year, value: 1, to: lower) ?? lower
+        }
+        return lower..<upper
+    }
+
+    private func normalizedAnchorStart() -> Date {
+        switch selectedGranularity {
+        case .day:
+            return calendar.startOfDay(for: currentAnchorDate)
+        case .week:
+            let comps = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: currentAnchorDate)
+            return calendar.date(from: comps) ?? calendar.startOfDay(for: currentAnchorDate)
+        case .year:
+            let comps = calendar.dateComponents([.year], from: currentAnchorDate)
+            return calendar.date(from: comps) ?? calendar.startOfDay(for: currentAnchorDate)
+        }
+    }
+
+    /// Transactions within the currently selected period
+    var periodFiltered: [Transaction] {
+        let r = periodRange
+        return filtered.filter { r.contains($0.date ?? Date.distantPast) }
+    }
+    
+    /// Total income within the current period
+    var periodIncomeTotal: Double {
+        transactions
+            .filter { Int($0.type) == 0 }
+            .filter { periodRange.contains($0.date ?? Date()) }
+            .reduce(0) { $0 + $1.amount }
+    }
+    
+    /// Total expenses within the current period
+    var periodExpenseTotal: Double {
+        transactions
+            .filter { Int($0.type) == 1 }
+            .filter { periodRange.contains($0.date ?? Date()) }
+            .reduce(0) { $0 + $1.amount }
+    }
+
+    /// Net (income - expenses) within the current period
+    var periodNetTotal: Double {
+        periodIncomeTotal - periodExpenseTotal
+    }
+
+    /// Total for the currently selected flow within the current period
+    var periodSelectedFlowTotal: Double {
+        switch selectedFlow {
+        case .income: return periodIncomeTotal
+        case .expense: return periodExpenseTotal
+        }
+    }
+
+    /// Aggregated totals per bucketed date for the current granularity
+    var aggregated: [(date: Date, total: Double)] {
+        let key = PeriodKey(flow: selectedFlow, granularity: selectedGranularity, anchorDay: normalizedAnchorStart())
+        if let cached = cachedAggregated[key] {
+            return cached
+        }
+
+        let buckets = Dictionary(grouping: periodFiltered) { tx -> Date in
+            let date = tx.date ?? Date()
+            switch selectedGranularity {
+            case .day:
+                // bucket by hour of the day
+                let comps = calendar.dateComponents([.year, .month, .day, .hour], from: date)
+                return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
+            case .week:
+                // bucket by day within the week (start of day)
+                return calendar.startOfDay(for: date)
+            case .year:
+                // bucket by month within the year (first of month)
+                let comps = calendar.dateComponents([.year, .month], from: date)
+                return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
+            }
+        }
+
+        let pairs = buckets.map { (key, values) in
+            (date: key, total: values.reduce(0) { $0 + $1.amount })
+        }.sorted { $0.date < $1.date }
+
+        cachedAggregated[key] = pairs
+        return pairs
+    }
+
+    // MARK: - Intent
+    /// Move the anchor date forward/backward by one unit of the current granularity
+    func shiftPeriod(_ delta: Int) {
+        let cal = Calendar.current
+        cachedAggregated.removeAll()
+        switch selectedGranularity {
+        case .day:
+            currentAnchorDate =
+                cal.date(byAdding: .day, value: delta, to: currentAnchorDate)
+                ?? currentAnchorDate
+        case .week:
+            currentAnchorDate =
+                cal.date(
+                    byAdding: .weekOfYear,
+                    value: delta,
+                    to: currentAnchorDate
+                ) ?? currentAnchorDate
+        case .year:
+            currentAnchorDate =
+                cal.date(byAdding: .year, value: delta, to: currentAnchorDate)
+                ?? currentAnchorDate
+        }
+    }
+
+    var periodTitle: String {
+        let formatter = DateFormatter()
+        switch selectedGranularity {
+        case .day:
+            formatter.setLocalizedDateFormatFromTemplate("MMM d")
+            return formatter.string(from: periodRange.lowerBound)
+        case .week:
+            let dif = DateIntervalFormatter()
+            dif.dateStyle = .medium
+            dif.timeStyle = .none
+            let lower = periodRange.lowerBound
+            let upper = periodRange.upperBound.addingTimeInterval(-1)
+            return dif.string(from: lower, to: upper)
+        case .year:
+            formatter.dateFormat = "yyyy"
+            return formatter.string(from: periodRange.lowerBound)
+        }
+    }
+
+    // MARK: - UI Helpers
+    var selectedFlowColor: Color {
+        switch selectedFlow {
+        case .income: return Color.green
+        case .expense: return Color.red
+        }
+    }
+
+    static func color(for flow: Flow) -> Color {
+        switch flow {
+        case .income: return Color.green
+        case .expense: return Color.red
+        }
+    }
+}

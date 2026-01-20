@@ -6,34 +6,79 @@
 //
 
 import Foundation
+import Combine
 
-final class BalanceViewModel {
+@MainActor
+final class BalanceViewModel: ObservableObject {
 
+    // MARK: - Dependencies
     private let accountId: UUID
     private let transactionRepository: TransactionRepositoryProtocol
+    private let accountRepository: AccountRepositoryProtocol
 
-    private(set) var transactions: [Transaction] = [] {
-        didSet {
-            onTransactionsChanged?(transactions)
-        }
-    }
+    // MARK: - Published State
+    @Published private(set) var transactions: [Transaction] = []
+    @Published private(set) var isLoading: Bool = false
+    @Published var error: Error?
 
-    var onTransactionsChanged: (([Transaction]) -> Void)?
-
+    // MARK: - Init (DI-friendly)
     init(
         accountId: UUID,
-        transactionRepository: TransactionRepositoryProtocol
+        transactionRepository: TransactionRepositoryProtocol,
+        accountRepository: AccountRepositoryProtocol
     ) {
         self.accountId = accountId
         self.transactionRepository = transactionRepository
+        self.accountRepository = accountRepository
     }
 
+    // MARK: - Load
     func loadTransactions() {
+        isLoading = true
+        error = nil
+
         do {
-            transactions = try transactionRepository
-                .fetchTransactions(accountId: accountId)
+            transactions = try transactionRepository.fetchTransactions(
+                accountId: accountId
+            )
         } catch {
-            print("Failed to fetch transactions:", error)
+            self.error = error
+        }
+
+        isLoading = false
+    }
+
+    // MARK: - Add
+    func addTransaction(
+        amount: Double,
+        date: Date,
+        note: String?,
+        type: TransactionType
+    ) {
+        do {
+            let account = try accountRepository.fetchAccount(by: accountId)
+
+            _ = try transactionRepository.createTransaction(
+                account: account,
+                amount: amount,
+                date: date,
+                note: note,
+                type: type
+            )
+
+            loadTransactions()
+        } catch {
+            self.error = error
+        }
+    }
+
+    // MARK: - Delete
+    func deleteTransaction(_ transaction: Transaction) {
+        do {
+            try transactionRepository.deleteTransaction(transaction)
+            transactions.removeAll { $0.id == transaction.id }
+        } catch {
+            self.error = error
         }
     }
 }

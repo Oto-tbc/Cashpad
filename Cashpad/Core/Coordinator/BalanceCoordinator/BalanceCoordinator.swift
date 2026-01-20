@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 final class BalanceCoordinator: Coordinator {
     
@@ -27,16 +28,23 @@ final class BalanceCoordinator: Coordinator {
     }
     
     func start() {
-        let viewModel = diContainer.makeBalanceViewModel(accountId: account.id)
+        let balanceViewModel = diContainer.makeBalanceViewModel(
+            accountId: account.id
+        )
         
+        let transactionsViewModel = diContainer.makeBalanceViewModel(
+            accountId: account.id
+        )
+                
         let vc = BalanceViewController(
             account: account,
-            viewModel: viewModel,
+            viewModel: balanceViewModel,
             onBack: { [weak self] in
                 self?.navigationController.popViewController(animated: true)
                 self?.onFinish?()
             }
         )
+        
         navigationController.pushViewController(vc, animated: true)
     }
 }

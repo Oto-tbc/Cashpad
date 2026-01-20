@@ -15,13 +15,11 @@ final class BalanceNavigationView: UIView {
     private let titleLabel = UILabel()
     private let backButton = UIButton()
 
-    private let arrowLeft = UIImage(
-        systemName: "arrow.left",
-        withConfiguration: UIImage.SymbolConfiguration(
-            pointSize: 18,
-            weight: .semibold
-        )
-    )
+    private let arrowLeft: UIImage? = {
+        let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)
+        let image = UIImage(systemName: "arrow.left", withConfiguration: config)
+        return image?.withTintColor(UIColor.systemBlue, renderingMode: .alwaysOriginal)
+    }()
 
     // MARK: - Actions
 
@@ -87,3 +85,4 @@ final class BalanceNavigationView: UIView {
         titleLabel.text = title
     }
 }
+

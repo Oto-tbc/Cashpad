@@ -43,7 +43,8 @@ final class AppDIContainer {
     func makeBalanceViewModel(accountId: UUID) -> BalanceViewModel {
         BalanceViewModel(
             accountId: accountId,
-            transactionRepository: makeTransactionRepository()
+            transactionRepository: makeTransactionRepository(), accountRepository: makeAccountRepository()
         )
     }
+    
 }

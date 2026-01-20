@@ -49,9 +49,16 @@ final class BalanceView: UIView {
     ) {
         navigationView.configure(title: account.name)
         navigationView.onBack = onBack
-        
-        let currency = Currency(rawValue: account.currency) ?? .usd
-        balanceView.configure(balance: account.balance, currency: currency.symbol)
+    }
+    
+    func updateBalance(
+        balance: Double,
+        currency: String
+    ) {
+        balanceView.configure(
+            balance: balance,
+            currency: currency
+        )
     }
     
 }

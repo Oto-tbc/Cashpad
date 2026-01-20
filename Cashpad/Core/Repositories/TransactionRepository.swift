@@ -17,9 +17,11 @@ protocol TransactionRepositoryProtocol {
     func createTransaction(
         account: Account,
         amount: Double,
-        type: Int
+        date: Date,
+        note: String?,
+        type: TransactionType
     ) throws -> Transaction
-
+    
     func deleteTransaction(
         _ transaction: Transaction
     ) throws
@@ -54,14 +56,17 @@ final class TransactionRepository: TransactionRepositoryProtocol {
     func createTransaction(
         account: Account,
         amount: Double,
-        type: Int
+        date: Date,
+        note: String?,
+        type: TransactionType
     ) throws -> Transaction {
-
+        
         let transaction = Transaction(context: context)
         transaction.id = UUID()
         transaction.amount = amount
-        transaction.date = Date()
-        transaction.type = Int16(type)
+        transaction.date = date
+        transaction.note = note
+        transaction.type = Int16(type.id) ?? 0
         transaction.account = account
 
         try context.save()

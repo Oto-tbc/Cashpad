@@ -9,6 +9,7 @@ import CoreData
 
 protocol AccountRepositoryProtocol {
     func fetchAccounts() throws -> [Account]
+    func fetchAccount(by id: UUID) throws -> Account
     func createAccount(
         name: String,
         currency: String,
@@ -36,6 +37,18 @@ final class AccountRepository: AccountRepositoryProtocol {
             NSSortDescriptor(key: "createdAt", ascending: true)
         ]
         return try context.fetch(request)
+    }
+    
+    func fetchAccount(by id: UUID) throws -> Account {
+        let request: NSFetchRequest<Account> = Account.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+
+        guard let account = try context.fetch(request).first else {
+            throw AccountRepositoryError.accountNotFound(id: id)
+        }
+
+        return account
     }
 
     func createAccount(
@@ -75,3 +88,4 @@ final class AccountRepository: AccountRepositoryProtocol {
         try context.save()
     }
 }
+

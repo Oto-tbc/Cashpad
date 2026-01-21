@@ -13,9 +13,13 @@ final class AppDIContainer {
     static let shared = AppDIContainer()
 
     private let persistenceController: PersistenceController
+    private let exchangeService: ExchangeServiceProtocol
 
     private init() {
         self.persistenceController = PersistenceController.shared
+        self.exchangeService = ExchangeService(
+            apiKey: AppSecrets.exchangeApiKey
+        )
     }
 
     // MARK: - Repositories
@@ -30,6 +34,10 @@ final class AppDIContainer {
         TransactionRepository(
             context: persistenceController.container.viewContext
         )
+    }
+    
+    func makeExchangeRepository() -> ExchangeRepositoryProtocol {
+        ExchangeRepository(service: exchangeService)
     }
 
     // MARK: - ViewModels

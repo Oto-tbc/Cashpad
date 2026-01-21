@@ -13,11 +13,12 @@ protocol ExchangeServiceProtocol {
 
 final class ExchangeService: ExchangeServiceProtocol {
 
-    private let apiKey = "fca_live_qnxObjvkpFCibxSvyNh4g4nFLkzstnNNWOTReol7"
+    private let apiKey: String
     private let session: URLSession
 
-    init(session: URLSession = .shared) {
+    init(session: URLSession = .shared, apiKey: String) {
         self.session = session
+        self.apiKey = apiKey
     }
 
     func fetchLatestRates(base: String) async throws -> ExchangeRate {

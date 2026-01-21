@@ -14,13 +14,19 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     // MARK: - Properties
     private let account: AccountModel
     private let viewModel: BalanceViewModel
+    
     private var cancellables = Set<AnyCancellable>()
     
-    private let balanceView = BalanceView()
     private var chartHostingController: UIHostingController<ChartView>?
     private var transactionsHostingController: UIHostingController<TransactionsView>?
+    private var chartViewModel: ChartViewModel?
     
     private let onBack: () -> Void
+    
+    private let balanceView = BalanceView()
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    private let whiteSafeAreaView = UIView()
     
     // MARK: - Initializers
     init(
@@ -43,11 +49,10 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
         super.viewDidLoad()
         title = account.name
         view.backgroundColor = UIColor(named: "SecondaryBackground")
-        balanceView.configure(
-            account: account,
-            onBack: onBack
-        )
+
+        setupScrollView()
         setupBalanceView()
+        setupWhiteSafeAreaView()
         setupChart()
         setupTransactionsView()
         bindViewModel()
@@ -73,95 +78,132 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
         return navigationController?.viewControllers.count ?? 0 > 1
     }
     
-    // MARK: - SwiftUI Embedding
+    // MARK: - Setup UI
+    
+    private func setupScrollView() {
+        view.addSubview(scrollView)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        scrollView.addSubview(contentView)
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
+        ])
+    }
     
     private func setupBalanceView() {
-        view.addSubview(balanceView)
+        contentView.addSubview(balanceView)
+        
+        balanceView.configure(
+            account: account,
+            onBack: onBack
+        )
+        
         balanceView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            balanceView.topAnchor.constraint(equalTo: view.topAnchor),
-            balanceView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            balanceView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            balanceView.heightAnchor.constraint(equalToConstant: 160)
+            balanceView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            balanceView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            balanceView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            balanceView.heightAnchor.constraint(equalToConstant: 260)
         ])
     }
     
     private func setupChart() {
         // Build ChartViewModel via DI using the selected account id
         let chartVM = AppDIContainer.shared.makeChartViewModel(accountId: account.id)
+        self.chartViewModel = chartVM
         let chartView = ChartView(viewModel: chartVM)
         let hosting = UIHostingController(rootView: chartView)
         chartHostingController = hosting
 
         addChild(hosting)
-        view.addSubview(hosting.view)
+        contentView.addSubview(hosting.view)
 
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
         hosting.view.backgroundColor = .clear
-
+        
         // Place chart below balanceView
         NSLayoutConstraint.activate([
-            hosting.view.topAnchor.constraint(equalTo: balanceView.bottomAnchor),
-            hosting.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hosting.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hosting.view.heightAnchor.constraint(equalToConstant: 240)
+            hosting.view.topAnchor.constraint(equalTo: balanceView.bottomAnchor, constant: 12),
+            hosting.view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            hosting.view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            hosting.view.heightAnchor.constraint(greaterThanOrEqualToConstant: 300)
         ])
 
         hosting.didMove(toParent: self)
     }
     
-    // Embeds TransactionsView (SwiftUI) into UIKit using UIHostingController
     private func setupTransactionsView() {
         let transactionsView = TransactionsView(viewModel: viewModel)
         let hosting = UIHostingController(rootView: transactionsView)
         transactionsHostingController = hosting
 
         addChild(hosting)
-        view.addSubview(hosting.view)
+        contentView.addSubview(hosting.view)
 
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
         hosting.view.backgroundColor = .clear
 
-        guard let chartView = chartHostingController?.view else { return }
-
         // Pin transactions view below chart and stretch to bottom
         NSLayoutConstraint.activate([
-            hosting.view.topAnchor.constraint(equalTo: chartView.bottomAnchor, constant: 12),
-            hosting.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hosting.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            hosting.view.topAnchor.constraint(equalTo: chartHostingController!.view.bottomAnchor, constant: 12),
+            hosting.view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            hosting.view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            hosting.view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
 
         hosting.didMove(toParent: self)
+    }
+    
+    private func setupWhiteSafeAreaView() {
+        contentView.addSubview(whiteSafeAreaView)
+        
+        whiteSafeAreaView.backgroundColor = UIColor(named: "Background")
+        
+        whiteSafeAreaView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            whiteSafeAreaView.topAnchor.constraint(equalTo: view.topAnchor),
+            whiteSafeAreaView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            whiteSafeAreaView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            whiteSafeAreaView.bottomAnchor.constraint(equalTo: balanceView.topAnchor)
+        ])
     }
     
     // MARK: - Bindings
     // Bind Combine publishers to update UI
     private func bindViewModel() {
         
+        Publishers.CombineLatest(viewModel.$balance, viewModel.$currencySymbol)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] balance, symbol in
+                guard let self else { return }
+                self.balanceView.updateBalance(
+                    balance: balance,
+                    currency: symbol
+                )
+            }
+            .store(in: &cancellables)
+        
         viewModel.$transactions
             .receive(on: DispatchQueue.main)
             .sink { [weak self] transactions in
-                guard let self else { return }
-                
-                self.updateBalance(from: transactions)
+                guard let self, let chartVM = self.chartViewModel else { return }
+                chartVM.reload(with: transactions)
             }
             .store(in: &cancellables)
     }
-    
-    // MARK: - UI Updates
-    // Calculates and displays the account balance
-    private func updateBalance(from transactions: [Transaction]) {
-        let balance = transactions.reduce(0) { result, transaction in
-            transaction.type == 0
-                ? result + transaction.amount
-                : result - transaction.amount
-        }
-        
-        let currency = Currency(rawValue: account.currency) ?? .usd
-        
-        balanceView.updateBalance(
-            balance: balance,
-            currency: currency.symbol
-        )
-    }
 }
+

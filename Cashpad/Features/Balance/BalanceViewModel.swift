@@ -19,6 +19,8 @@ final class BalanceViewModel: ObservableObject {
     // MARK: - Published State
     @Published private(set) var transactions: [Transaction] = []
     @Published private(set) var isLoading: Bool = false
+    @Published private(set) var balance: Double = 0
+    @Published private(set) var currencySymbol: String = ""
     @Published var error: Error?
 
     // MARK: - Init (DI-friendly)
@@ -41,11 +43,28 @@ final class BalanceViewModel: ObservableObject {
             transactions = try transactionRepository.fetchTransactions(
                 accountId: accountId
             )
+            recomputeBalance()
         } catch {
             self.error = error
         }
 
         isLoading = false
+    }
+
+    private func recomputeBalance() {
+        let newBalance = transactions.reduce(0.0) { result, transaction in
+            result + transaction.amount
+        }
+        balance = newBalance
+
+        do {
+            let account = try accountRepository.fetchAccount(by: accountId)
+            let currency = Currency(rawValue: account.currency ?? "") ?? .usd
+            currencySymbol = currency.symbol
+        } catch {
+            // Fallback to USD symbol on failure
+            currencySymbol = Currency.usd.symbol
+        }
     }
 
     // MARK: - Add
@@ -77,6 +96,7 @@ final class BalanceViewModel: ObservableObject {
         do {
             try transactionRepository.deleteTransaction(transaction)
             transactions.removeAll { $0.id == transaction.id }
+            recomputeBalance()
         } catch {
             self.error = error
         }

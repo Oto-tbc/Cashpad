@@ -34,7 +34,7 @@ final class BalanceView: UIView {
             navigationView.topAnchor.constraint(equalTo: topAnchor),
             navigationView.leadingAnchor.constraint(equalTo: leadingAnchor),
             navigationView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            navigationView.heightAnchor.constraint(equalToConstant: 190),
+            navigationView.heightAnchor.constraint(equalToConstant: 130),
             
             balanceView.topAnchor.constraint(equalTo: navigationView.bottomAnchor),
             balanceView.leadingAnchor.constraint(equalTo: leadingAnchor),

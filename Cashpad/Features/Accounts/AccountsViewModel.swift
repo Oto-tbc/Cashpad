@@ -85,9 +85,7 @@ final class AccountsViewModel: ObservableObject {
         let transactions = account.transactions as? Set<Transaction> ?? []
 
         let balance = transactions.reduce(0.0) { result, transaction in
-            transaction.type == 0
-                ? result + transaction.amount
-                : result - transaction.amount
+            result + transaction.amount
         }
 
         return AccountModel(
@@ -101,3 +99,4 @@ final class AccountsViewModel: ObservableObject {
         )
     }
 }
+

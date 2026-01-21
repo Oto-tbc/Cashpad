@@ -42,7 +42,7 @@ final class BalanceNavigationView: UIView {
         backgroundColor = UIColor(named: "Background")
 
         stack.axis = .horizontal
-        stack.spacing = 34
+        stack.spacing = 24
         stack.alignment = .center
 
         addSubview(stack)
@@ -61,7 +61,7 @@ final class BalanceNavigationView: UIView {
             for: .touchUpInside
         )
 
-        titleLabel.font = .systemFont(ofSize: 26, weight: .semibold)
+        titleLabel.font = .systemFont(ofSize: 22, weight: .semibold)
         titleLabel.textColor = .label
         titleLabel.numberOfLines = 1
         titleLabel.setContentCompressionResistancePriority(.required, for: .horizontal)

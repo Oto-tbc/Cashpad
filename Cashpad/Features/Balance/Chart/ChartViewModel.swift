@@ -34,6 +34,12 @@ final class ChartViewModel: ObservableObject {
         }
     }
 
+    /// Reload view model with externally provided transactions (e.g., from BalanceViewModel)
+    func reload(with transactions: [Transaction]) {
+        self.transactions = transactions
+        cachedAggregated.removeAll()
+    }
+
     // MARK: - Calendar & Cache
     private let calendar = Calendar.current
 
@@ -207,3 +213,4 @@ final class ChartViewModel: ObservableObject {
         }
     }
 }
+

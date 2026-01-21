@@ -66,7 +66,7 @@ final class TransactionRepository: TransactionRepositoryProtocol {
         transaction.amount = amount
         transaction.date = date
         transaction.note = note
-        transaction.type = Int16(type.id) ?? 0
+        transaction.type = (type == .income) ? 0 : 1
         transaction.account = account
 
         try context.save()
@@ -80,3 +80,4 @@ final class TransactionRepository: TransactionRepositoryProtocol {
         try context.save()
     }
 }
+

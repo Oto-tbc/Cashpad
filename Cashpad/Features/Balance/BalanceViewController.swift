@@ -22,6 +22,7 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     private var chartViewModel: ChartViewModel?
     
     private let onBack: () -> Void
+    private let onExchange: () -> Void
     
     private let balanceView = BalanceView()
     private let scrollView = UIScrollView()
@@ -32,11 +33,13 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     init(
         account: AccountModel,
         viewModel: BalanceViewModel,
-        onBack: @escaping () -> Void
+        onBack: @escaping () -> Void,
+        onExchange: @escaping () -> Void
     ) {
         self.account = account
         self.viewModel = viewModel
         self.onBack = onBack
+        self.onExchange = onExchange
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -47,9 +50,9 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     // Setup UI, bindings, and initial data loading
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = account.name
         view.backgroundColor = UIColor(named: "SecondaryBackground")
-
+        
+        setupNavigation()
         setupScrollView()
         setupBalanceView()
         setupWhiteSafeAreaView()
@@ -80,6 +83,28 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     
     // MARK: - Setup UI
     
+    private func setupNavigation() {
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        title = account.name
+        
+        let backButton = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(handleBack)
+        )
+        navigationItem.leftBarButtonItem = backButton
+
+        let exchangeButton = UIBarButtonItem(
+            image: UIImage(systemName: "creditcard.arrow.trianglehead.2.clockwise.rotate.90"),
+            style: .plain,
+            target: self,
+            action: #selector(handleExchange)
+        )
+        navigationItem.rightBarButtonItem = exchangeButton
+
+    }
+    
     private func setupScrollView() {
         view.addSubview(scrollView)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -108,15 +133,16 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
         
         balanceView.configure(
             account: account,
-            onBack: onBack
+            onBack: onBack,
+            onExchange: onExchange
         )
         
         balanceView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            balanceView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            balanceView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18),
             balanceView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             balanceView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            balanceView.heightAnchor.constraint(equalToConstant: 260)
+            balanceView.heightAnchor.constraint(equalToConstant: 140)
         ])
     }
     
@@ -183,7 +209,7 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     }
     
     // MARK: - Bindings
-    // Bind Combine publishers to update UI
+    
     private func bindViewModel() {
         
         Publishers.CombineLatest(viewModel.$balance, viewModel.$currencySymbol)
@@ -204,6 +230,16 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
                 chartVM.reload(with: transactions)
             }
             .store(in: &cancellables)
+    }
+    
+    // MARK: - Functions
+    
+    @objc private func handleBack() {
+        onBack()
+    }
+    
+    @objc private func handleExchange() {
+        onExchange()
     }
 }
 

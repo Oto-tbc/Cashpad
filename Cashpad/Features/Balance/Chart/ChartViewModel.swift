@@ -107,7 +107,7 @@ final class ChartViewModel: ObservableObject {
         transactions
             .filter { Int($0.type) == 1 }
             .filter { periodRange.contains($0.date ?? Date()) }
-            .reduce(0) { $0 + $1.amount }
+            .reduce(0) { $0 + abs($1.amount) }
     }
 
     /// Net (income - expenses) within the current period
@@ -148,7 +148,13 @@ final class ChartViewModel: ObservableObject {
         }
 
         let pairs = buckets.map { (key, values) in
-            (date: key, total: values.reduce(0) { $0 + $1.amount })
+            let total: Double
+            if selectedFlow == .expense {
+                total = values.reduce(0) { $0 + abs($1.amount) }
+            } else {
+                total = values.reduce(0) { $0 + $1.amount }
+            }
+            return (date: key, total: total)
         }.sorted { $0.date < $1.date }
 
         cachedAggregated[key] = pairs

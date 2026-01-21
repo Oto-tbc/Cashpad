@@ -21,6 +21,12 @@ struct TransactionsView: View {
     
     var body: some View {
         Color.clear
+            .onDisappear {
+                self.showAllTransactionsView = false
+            }
+            .onAppear {
+                self.showAllTransactionsView = true
+            }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 Rectangle()
                     .foregroundStyle(.clear)

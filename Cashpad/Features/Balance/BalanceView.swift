@@ -9,10 +9,11 @@ import UIKit
 
 final class BalanceView: UIView {
 
-    private let navigationView = BalanceNavigationView()
+//    private let navigationView = BalanceNavigationView()
     private let balanceView = CurrentBalanceView()
 
     private var onBack: (() -> Void)?
+    private var onExchange: (() -> Void)?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,19 +25,19 @@ final class BalanceView: UIView {
     }
 
     private func setup() {
-        addSubview(navigationView)
+//        addSubview(navigationView)
         addSubview(balanceView)
 
-        navigationView.translatesAutoresizingMaskIntoConstraints = false
+//        navigationView.translatesAutoresizingMaskIntoConstraints = false
         balanceView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            navigationView.topAnchor.constraint(equalTo: topAnchor),
-            navigationView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            navigationView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            navigationView.heightAnchor.constraint(equalToConstant: 130),
+//            navigationView.topAnchor.constraint(equalTo: topAnchor),
+//            navigationView.leadingAnchor.constraint(equalTo: leadingAnchor),
+//            navigationView.trailingAnchor.constraint(equalTo: trailingAnchor),
+//            navigationView.heightAnchor.constraint(equalToConstant: 130),
             
-            balanceView.topAnchor.constraint(equalTo: navigationView.bottomAnchor),
+            balanceView.topAnchor.constraint(equalTo: topAnchor),
             balanceView.leadingAnchor.constraint(equalTo: leadingAnchor),
             balanceView.trailingAnchor.constraint(equalTo: trailingAnchor),
             balanceView.heightAnchor.constraint(equalToConstant: 130)
@@ -45,10 +46,12 @@ final class BalanceView: UIView {
 
     func configure(
         account: AccountModel,
-        onBack: @escaping () -> Void
+        onBack: @escaping () -> Void,
+        onExchange: @escaping() -> Void
     ) {
-        navigationView.configure(title: account.name)
-        navigationView.onBack = onBack
+//        navigationView.configure(title: account.name)
+//        navigationView.onBack = onBack
+//        navigationView.onExchange = onExchange
     }
     
     func updateBalance(

@@ -102,7 +102,19 @@ struct ChartView: View {
                 AxisMarks(position: .leading)
             }
             .chartXScale(domain: viewModel.periodRange.lowerBound...viewModel.periodRange.upperBound)
-            .chartYScale(domain: (viewModel.aggregated.map{ $0.total }.min() ?? 0)...(viewModel.aggregated.map{ $0.total }.max() ?? 1))
+            .chartYScale(domain: {
+                let totals = viewModel.aggregated.map { $0.total }
+                if let minVal = totals.min(), let maxVal = totals.max() {
+                    if totals.count == 1 {
+                        let v = totals[0]
+                        return (v - 500)...(v + 500)
+                    } else {
+                        return minVal...maxVal
+                    }
+                } else {
+                    return 0...1000
+                }
+            }())
             .aspectRatio(1, contentMode: .fit)
             .contentShape(Rectangle())
             .gesture(

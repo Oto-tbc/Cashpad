@@ -140,6 +140,8 @@
 /* Begin XCBuildConfiguration section */
 		549D50692F0CAF8A00833433 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 549D50532F0CAF8800833433 /* Cashpad */;
+			baseConfigurationReferenceRelativePath = Configuration/API/Debug.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -175,6 +177,8 @@
 		};
 		549D506A2F0CAF8A00833433 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 549D50532F0CAF8800833433 /* Cashpad */;
+			baseConfigurationReferenceRelativePath = Configuration/API/Release.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -210,6 +214,8 @@
 		};
 		549D506B2F0CAF8A00833433 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 549D50532F0CAF8800833433 /* Cashpad */;
+			baseConfigurationReferenceRelativePath = Configuration/API/Debug.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -273,6 +279,8 @@
 		};
 		549D506C2F0CAF8A00833433 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 549D50532F0CAF8800833433 /* Cashpad */;
+			baseConfigurationReferenceRelativePath = Configuration/API/Release.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

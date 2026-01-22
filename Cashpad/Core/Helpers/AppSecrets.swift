@@ -13,8 +13,7 @@ enum AppSecrets {
         guard
             let key = Bundle.main.object(
                 forInfoDictionaryKey: "EXCHANGE_API_KEY"
-            ) as? String,
-            !key.isEmpty
+            ) as? String
         else {
             fatalError("EXCHANGE_API_KEY is missing")
         }

@@ -12,30 +12,42 @@ protocol ExchangeServiceProtocol {
 }
 
 final class ExchangeService: ExchangeServiceProtocol {
-
+    
     private let apiKey: String
     private let session: URLSession
-
+    
     init(session: URLSession = .shared, apiKey: String) {
         self.session = session
-        self.apiKey = apiKey
+        self.apiKey = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
     }
-
+    
     func fetchLatestRates(base: String) async throws -> ExchangeRate {
+        print("🔑 API KEY USED:", apiKey)
 
-        var components = URLComponents(string: "https://api.freecurrencyapi.com/v1/latest")!
+        var components = URLComponents(
+            string: "https://api.freecurrencyapi.com/v1/latest"
+        )!
         components.queryItems = [
-            URLQueryItem(name: "apikey", value: apiKey),
-            URLQueryItem(name: "base_currency", value: base)
+            URLQueryItem(name: "apikey", value: apiKey)
         ]
-        
+
         guard let url = components.url else {
             throw URLError(.badURL)
         }
+        
+        print("🌍 FULL REQUEST URL:")
+        print(url.absoluteString)
 
         let (data, response) = try await session.data(from: url)
 
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+        guard let http = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+
+        if http.statusCode != 200 {
+            let body = String(data: data, encoding: .utf8) ?? "No body"
+            print("❌ HTTP Status:", http.statusCode)
+            print("❌ Response body:", body)
             throw URLError(.badServerResponse)
         }
 
@@ -45,7 +57,7 @@ final class ExchangeService: ExchangeServiceProtocol {
         )
 
         return ExchangeRate(
-            base: base,
+            base: "USD",
             rates: decoded.data,
             fetchedAt: Date()
         )

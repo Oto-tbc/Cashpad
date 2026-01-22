@@ -162,7 +162,7 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
         
         // Place chart below balanceView
         NSLayoutConstraint.activate([
-            hosting.view.topAnchor.constraint(equalTo: balanceView.bottomAnchor, constant: 12),
+            hosting.view.topAnchor.constraint(equalTo: balanceView.bottomAnchor, constant: 8),
             hosting.view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             hosting.view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             hosting.view.heightAnchor.constraint(greaterThanOrEqualToConstant: 300)
@@ -242,4 +242,3 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
         onExchange()
     }
 }
-

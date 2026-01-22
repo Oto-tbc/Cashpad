@@ -38,4 +38,3 @@ final class ExchangeRepository: ExchangeRepositoryProtocol {
         return freshRate
     }
 }
-

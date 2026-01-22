@@ -63,4 +63,10 @@ final class AppDIContainer {
         )
     }
     
+    func makeExchangeViewModel() -> ExchangeViewModel {
+        ExchangeViewModel(
+            repository: makeExchangeRepository()
+        )
+    }
+    
 }

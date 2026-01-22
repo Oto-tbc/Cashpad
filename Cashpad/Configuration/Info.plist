@@ -4,6 +4,9 @@
 <dict>
 	<key>Application requires full screen</key>
 	<true/>
+	<key>EXCHANGE_API_KEY</key>
+	<string>$(EXCHANGE_API_KEY)
+</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

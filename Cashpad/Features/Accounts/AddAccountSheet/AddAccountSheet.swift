@@ -16,12 +16,14 @@ struct AddAccountSheet: View {
     @State private var selectedCurrency: Currency = .usd
     @State private var initialBalance: String = ""
     
+    @FocusState private var focusedField: Field?
+    
     let onSave: (
-        String,   // name
-        String,   // currency rawValue
-        String?,  // emoji rawValue
-        String?,   // color rawValue
-        Double     // Balance
+        String, 
+        String,
+        String?,
+        String?,
+        Double
     ) -> Void
     
     let onCancel: () -> Void
@@ -105,6 +107,7 @@ struct AddAccountSheet: View {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color(.systemGray6))
                             )
+                            .focused($focusedField, equals: .name)
                         }
                     }
                     
@@ -121,6 +124,7 @@ struct AddAccountSheet: View {
                                 TextField("0.00", text: $initialBalance)
                                     .keyboardType(.decimalPad)
                                     .font(.system(size: 32, weight: .regular))
+                                    .focused($focusedField, equals: .initialBalance)
                             }
                         }
                     }
@@ -174,6 +178,12 @@ struct AddAccountSheet: View {
                         onCancel()
                     } label: {
                         Image(systemName: "xmark")
+                    }
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        focusedField = nil
                     }
                 }
             }

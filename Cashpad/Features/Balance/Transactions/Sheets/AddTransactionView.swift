@@ -17,17 +17,12 @@ struct AddTransactionView: View {
 
     @FocusState private var focusedField: Field?
 
-    enum Field {
-        case amount
-        case note
-    }
-
     // MARK: - Actions
     let onSave: (
-        Double,          // amount (signed)
-        Date,            // date
-        String?,         // note
-        TransactionType  // type
+        Double,
+        Date,
+        String?,
+        TransactionType
     ) -> Void
 
     let onCancel: () -> Void
@@ -143,7 +138,6 @@ struct AddTransactionView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
 
-                // Close button on RIGHT
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
                         onCancel()
@@ -152,7 +146,6 @@ struct AddTransactionView: View {
                     }
                 }
 
-                // Keyboard Done button (for decimalPad)
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button("Done") {

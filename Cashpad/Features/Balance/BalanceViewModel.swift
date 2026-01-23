@@ -23,6 +23,42 @@ final class BalanceViewModel: ObservableObject {
     @Published private(set) var currencySymbol: String = ""
     @Published var error: Error?
 
+    // MARK: - Derived Collections
+    var filteredTransactions: [Transaction] {
+        transactions.sorted { (a, b) in
+            let ad = a.date ?? .distantPast
+            let bd = b.date ?? .distantPast
+            return ad > bd
+        }
+    }
+
+    var groupedTransactions: [Date: [Transaction]] {
+        let calendar = Calendar.current
+        let groups = Dictionary(grouping: filteredTransactions) { (tx: Transaction) -> Date in
+            let date = tx.date ?? .distantPast
+            return calendar.startOfDay(for: date)
+        }
+        return groups.mapValues { list in
+            list.sorted { (a, b) in
+                let ad = a.date ?? .distantPast
+                let bd = b.date ?? .distantPast
+                return ad > bd
+            }
+        }
+    }
+
+    // MARK: - Formatting
+    private lazy var dateHeaderFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateStyle = .medium
+        df.timeStyle = .none
+        return df
+    }()
+
+    func headerString(for day: Date) -> String {
+        dateHeaderFormatter.string(from: day)
+    }
+
     // MARK: - Init (DI-friendly)
     init(
         accountId: UUID,
@@ -38,12 +74,13 @@ final class BalanceViewModel: ObservableObject {
     func loadTransactions() {
         isLoading = true
         error = nil
-
         do {
             transactions = try transactionRepository.fetchTransactions(
                 accountId: accountId
             )
+
             recomputeBalance()
+ 
         } catch {
             self.error = error
         }
@@ -102,3 +139,4 @@ final class BalanceViewModel: ObservableObject {
         }
     }
 }
+

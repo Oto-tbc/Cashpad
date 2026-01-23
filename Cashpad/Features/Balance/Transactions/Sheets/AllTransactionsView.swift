@@ -23,7 +23,24 @@ struct AllTransactionsView: View {
     
     var body: some View {
         ScrollView(.vertical) {
-            Text("123")
+            VStack(alignment: .leading, spacing: 16) {
+                ForEach(viewModel.groupedTransactions.keys.sorted(by: >), id: \.self) { day in
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(viewModel.headerString(for: day))
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 18)
+
+                        VStack(spacing: 8) {
+                            ForEach(viewModel.groupedTransactions[day] ?? []) { tx in
+                                TransactionRow(transaction: tx)
+                                    .padding(.horizontal, 18)
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.top, 8)
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             HStack(spacing: 10) {
@@ -61,7 +78,7 @@ struct AllTransactionsView: View {
                 } label: {
                     ZStack {
                         if isSheetExpanded || isFocused {
-                            Image(systemName: "xmark")
+                            Image(systemName: "line.3.horizontal.decrease")
                                 .frame(width: 48, height: 48)
                                 .glassEffect(in: .circle)
                                 .font(.title2)
@@ -108,5 +125,3 @@ struct AllTransactionsView: View {
         }
     }
 }
-
-

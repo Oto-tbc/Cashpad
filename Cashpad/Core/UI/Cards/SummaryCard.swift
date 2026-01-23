@@ -15,6 +15,7 @@ struct summaryCard: View {
     let amount: Double
     let isSelected: Bool
     let color: Color
+    let currency: Currency
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -23,12 +24,7 @@ struct summaryCard: View {
                 .font(.headline)
                 .foregroundStyle(.secondary)
 
-            Text(
-                amount,
-                format: .currency(
-                    code: Locale.current.currency?.identifier ?? "USD"
-                )
-            )
+            Text("\(String(format: "%.2f", amount)) \(currency.symbol)")
             .font(.title2.bold())
             .foregroundStyle(color)
             .monospacedDigit()

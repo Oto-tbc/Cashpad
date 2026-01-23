@@ -7,6 +7,7 @@ final class ChartViewModel: ObservableObject {
     // MARK: - Dependencies
     private let accountId: UUID
     private let transactionRepository: TransactionRepositoryProtocol
+    private let accountRepository: AccountRepositoryProtocol
 
     // MARK: - Published State
     @Published var selectedFlow: Flow = .expense { didSet { cachedAggregated.removeAll() } }
@@ -14,13 +15,16 @@ final class ChartViewModel: ObservableObject {
     @Published var currentAnchorDate: Date = Date() { didSet { cachedAggregated.removeAll() } }
     @Published var selectedTX: Transaction?
     @Published private(set) var transactions: [Transaction] = []
+    @Published private(set) var currency: Currency = .usd
 
     // MARK: - Init
-    init(accountId: UUID, transactionRepository: TransactionRepositoryProtocol) {
+    init(accountId: UUID, transactionRepository: TransactionRepositoryProtocol, accountRepository: AccountRepositoryProtocol) {
         self.accountId = accountId
         self.transactionRepository = transactionRepository
+        self.accountRepository = accountRepository
         self.transactions = []
         loadTransactions()
+        loadCurrency()
     }
 
     func loadTransactions() {
@@ -31,6 +35,16 @@ final class ChartViewModel: ObservableObject {
         } catch {
             self.transactions = []
             cachedAggregated.removeAll()
+        }
+    }
+
+    private func loadCurrency() {
+        do {
+            let account = try accountRepository.fetchAccount(by: accountId)
+            let code = account.currency ?? "USD"
+            self.currency = Currency(rawValue: code) ?? .usd
+        } catch {
+            self.currency = .usd
         }
     }
 

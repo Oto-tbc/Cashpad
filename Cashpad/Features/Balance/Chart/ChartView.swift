@@ -11,7 +11,8 @@ struct ChartView: View {
                     title: "Income",
                     amount: viewModel.periodIncomeTotal,
                     isSelected: viewModel.selectedFlow == .income,
-                    color: .green
+                    color: .green,
+                    currency: viewModel.currency
                 )
                 .onTapGesture { viewModel.selectedFlow = .income }
 
@@ -19,7 +20,8 @@ struct ChartView: View {
                     title: "Expenses",
                     amount: viewModel.periodExpenseTotal,
                     isSelected: viewModel.selectedFlow == .expense,
-                    color: .red
+                    color: .red,
+                    currency: viewModel.currency
                 )
                 .onTapGesture { viewModel.selectedFlow = .expense }
             }
@@ -82,7 +84,6 @@ struct ChartView: View {
                 switch viewModel.selectedGranularity {
                 case .day:
                     AxisMarks(values: .stride(by: .hour, count: 2)) { _ in
-                        // Hide vertical grid lines by omitting AxisGridLine
                         AxisTick()
                         AxisValueLabel()
                     }

@@ -21,6 +21,7 @@ protocol AccountRepositoryProtocol {
         to account: Account,
         amount: Double
     ) throws
+    func deleteAllAccounts() throws
 }
 
 final class AccountRepository: AccountRepositoryProtocol {
@@ -86,6 +87,26 @@ final class AccountRepository: AccountRepositoryProtocol {
     func deleteAccount(_ account: Account) throws {
         context.delete(account)
         try context.save()
+    }
+    
+    func deleteAllAccounts() throws {
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> =
+            Account.fetchRequest()
+
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        deleteRequest.resultType = .resultTypeObjectIDs
+
+        let result = try context.execute(deleteRequest) as? NSBatchDeleteResult
+        let objectIDs = result?.result as? [NSManagedObjectID] ?? []
+
+        let changes: [AnyHashable: Any] = [
+            NSDeletedObjectsKey: objectIDs
+        ]
+
+        NSManagedObjectContext.mergeChanges(
+            fromRemoteContextSave: changes,
+            into: [context]
+        )
     }
 }
 

@@ -10,21 +10,31 @@ import Foundation
 
 @MainActor
 final class AccountsViewModel: ObservableObject {
-    
-    
+
     @Published private(set) var accounts: [AccountModel] = []
     @Published private(set) var isLoading: Bool = false
     @Published var errorMessage: String?
-    
-    
-    private let repository: AccountRepositoryProtocol
+    @Published var requireFaceID:Bool
 
+    @Published var selectedTheme: AppTheme
+
+    private let repository: AccountRepositoryProtocol
+    private let themeManager: ThemeManagerProtocol
+    private let securityService: SecurityServiceProtocol
     
-    init(repository: AccountRepositoryProtocol) {
+
+    init(
+        repository: AccountRepositoryProtocol,
+        themeManager: ThemeManagerProtocol,
+        securityService: SecurityServiceProtocol
+    ) {
         self.repository = repository
+        self.themeManager = themeManager
+        self.selectedTheme = themeManager.theme
+        self.securityService = securityService
+        self.requireFaceID = securityService.isFaceIDEnabled
     }
 
-    
     func loadAccounts() {
         isLoading = true
         errorMessage = nil
@@ -80,7 +90,6 @@ final class AccountsViewModel: ObservableObject {
         }
     }
 
-    
     private static func mapToModel(_ account: Account) -> AccountModel {
         let transactions = account.transactions as? Set<Transaction> ?? []
 
@@ -98,5 +107,24 @@ final class AccountsViewModel: ObservableObject {
             balance: balance
         )
     }
+    
+    // MARK: - Settings
+    func updateTheme(_ theme: AppTheme) {
+        themeManager.theme = theme
+    }
+    
+    func clearAccounts() {
+        do {
+            try repository.deleteAllAccounts()
+            loadAccounts()
+        } catch {
+            errorMessage = "Failed to clear accounts"
+        }
+    }
+    
+    func updateFaceID(_ enabled: Bool) {
+        securityService.setFaceID(enabled)
+        requireFaceID = enabled
+    }
+    
 }
-

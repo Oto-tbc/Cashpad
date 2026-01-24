@@ -46,6 +46,7 @@ struct AccountsView: View {
 
             if showSettings {
                 SettingsModalView(
+                    viewModel: viewModel,
                     showSettings: $showSettings,
                     animation: modalAnimation
                 )

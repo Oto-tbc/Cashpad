@@ -121,7 +121,8 @@ struct AllTransactionsView: View {
                 }
             )
             .presentationDetents([.large])
-                .presentationDragIndicator(.visible)
+            .presentationDragIndicator(.visible)
+            .background(.thinMaterial.opacity(0.01))
         }
     }
 }

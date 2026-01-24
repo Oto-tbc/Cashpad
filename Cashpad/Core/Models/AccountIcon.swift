@@ -13,7 +13,6 @@ enum AccountIcon: String, CaseIterable, Identifiable {
     case wallet = "wallet.pass"
     case bank = "building.columns"
     case cash = "banknote"
-    case savings = "dollarsign.circle"
     case chart = "chart.pie"
 
     var id: String { rawValue }

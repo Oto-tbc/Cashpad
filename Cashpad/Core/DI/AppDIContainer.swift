@@ -14,12 +14,16 @@ final class AppDIContainer {
 
     private let persistenceController: PersistenceController
     private let exchangeService: ExchangeServiceProtocol
+    private let themeManager: ThemeManagerProtocol
+    private let securityService: SecurityServiceProtocol
 
     private init() {
         self.persistenceController = PersistenceController.shared
         self.exchangeService = ExchangeService(
             apiKey: AppSecrets.exchangeApiKey
         )
+        self.themeManager = ThemeManager()
+        self.securityService = SecurityService()
     }
 
     // MARK: - Repositories
@@ -39,12 +43,24 @@ final class AppDIContainer {
     func makeExchangeRepository() -> ExchangeRepositoryProtocol {
         ExchangeRepository(service: exchangeService)
     }
+    
+    // MARK: - Services
+    
+    func makeThemeManager() -> ThemeManagerProtocol {
+        themeManager
+    }
+    
+    func makeSecurityService() -> SecurityServiceProtocol {
+        securityService
+    }
 
     // MARK: - ViewModels
 
     func makeAccountsViewModel() -> AccountsViewModel {
         AccountsViewModel(
-            repository: makeAccountRepository()
+            repository: makeAccountRepository(),
+            themeManager: makeThemeManager(),
+            securityService: makeSecurityService()
         )
     }
     

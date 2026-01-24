@@ -33,8 +33,13 @@ struct AddAccountSheet: View {
         count: 5
     )
     
+    private let iconColumns = Array(
+        repeating: GridItem(.flexible(), spacing: 12),
+        count: 5
+    )
+    
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     
@@ -69,7 +74,7 @@ struct AddAccountSheet: View {
                         VStack(alignment: .leading, spacing: 12) {
                             sectionTitle("Icon")
                             
-                            HStack(spacing: 12) {
+                            LazyVGrid(columns: iconColumns, spacing: 12) {
                                 ForEach(AccountIcon.allCases) { icon in
                                     ZStack {
                                         Circle()
@@ -78,12 +83,13 @@ struct AddAccountSheet: View {
                                                 ? selectedColor.color.opacity(0.2)
                                                 : Color.clear
                                             )
-                                            .frame(width: 48, height: 48)
-                                        
+                                            .frame(height: 48)
+
                                         Image(systemName: icon.rawValue)
                                             .font(.system(size: 22, weight: .semibold))
                                             .foregroundColor(selectedColor.color)
                                     }
+                                    .frame(height: 48)
                                     .onTapGesture {
                                         selectedIcon = icon
                                     }

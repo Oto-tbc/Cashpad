@@ -5,6 +5,8 @@
 //  Created by Oto Sharvashidze on 22.01.26.
 //
 
+import SwiftUI
+
 
 enum AppTheme: String, CaseIterable, Identifiable {
     case system, light, dark
@@ -21,6 +23,13 @@ enum AppTheme: String, CaseIterable, Identifiable {
         case .system: return "gearshape"
         case .light: return "sun.max"
         case .dark: return "moon"
+        }
+    }
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
         }
     }
 }

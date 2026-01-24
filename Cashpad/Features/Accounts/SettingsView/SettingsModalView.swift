@@ -9,19 +9,17 @@ import SwiftUI
 
 struct SettingsModalView: View {
 
+    @ObservedObject var viewModel: AccountsViewModel
+    
     @Binding var showSettings: Bool
     let animation: Namespace.ID
 
-    @State private var selectedTheme: AppTheme = .system
     @State private var selectedCurrency: String = "USD"
-    @State private var requireFaceID: Bool = false
     @State private var showClearAlert: Bool = false
     @State private var showCurrencyPicker: Bool = false
 
-    var onThemeChange: ((AppTheme) -> Void)?
     var onCurrencyChange: ((String) -> Void)?
     var onRequireFaceIDChange: ((Bool) -> Void)?
-    var onClearAccounts: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 16) {
@@ -85,20 +83,20 @@ struct SettingsModalView: View {
             titleVisibility: .visible
         ) {
             Button("Clear Accounts", role: .destructive) {
-                onClearAccounts?()
+                viewModel.clearAccounts()
             }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This will permanently delete all account data from this device.")
         }
-        .onChange(of: selectedTheme) { _, newValue in
-            onThemeChange?(newValue)
+        .onChange(of: viewModel.selectedTheme) { _, newValue in
+            viewModel.updateTheme(newValue)
         }
         .onChange(of: selectedCurrency) { _, newValue in
             onCurrencyChange?(newValue)
         }
-        .onChange(of: requireFaceID) { _, newValue in
-            onRequireFaceIDChange?(newValue)
+        .onChange(of: viewModel.requireFaceID) { _, newValue in
+            viewModel.updateFaceID(newValue)
         }
     }
 
@@ -106,17 +104,17 @@ struct SettingsModalView: View {
 
     private var themeRow: some View {
         HStack(spacing: 12) {
-            Image(systemName: selectedTheme.icon)
+            Image(systemName: viewModel.selectedTheme.icon)
                 .foregroundStyle(.secondary)
             VStack(alignment: .leading, spacing: 2) {
                 Text("Theme")
                     .font(.headline)
-                Text(selectedTheme.title)
+                Text(viewModel.selectedTheme.title)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            Picker("Theme", selection: $selectedTheme) {
+            Picker("Theme", selection: $viewModel.selectedTheme) {
                 ForEach(AppTheme.allCases) { theme in
                     Text(theme.title).tag(theme)
                 }
@@ -192,7 +190,7 @@ struct SettingsModalView: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            Toggle("", isOn: $requireFaceID)
+            Toggle("", isOn: $viewModel.requireFaceID)
                 .labelsHidden()
         }
         .padding(14)

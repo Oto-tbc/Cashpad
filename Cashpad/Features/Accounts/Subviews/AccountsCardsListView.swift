@@ -51,6 +51,7 @@ struct AccountsCardsListView: View {
                             }
                         )
                         .onTapGesture {
+                            Haptic.tap()
                             onAccountSelected(account)
                         }
                     }

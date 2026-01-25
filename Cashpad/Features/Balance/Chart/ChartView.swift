@@ -14,7 +14,10 @@ struct ChartView: View {
                     color: .green,
                     currency: viewModel.currency
                 )
-                .onTapGesture { viewModel.selectedFlow = .income }
+                .onTapGesture {
+                    Haptic.tap()
+                    viewModel.selectedFlow = .income
+                }
 
                 summaryCard(
                     title: "Expenses",
@@ -23,7 +26,10 @@ struct ChartView: View {
                     color: .red,
                     currency: viewModel.currency
                 )
-                .onTapGesture { viewModel.selectedFlow = .expense }
+                .onTapGesture {
+                    Haptic.tap()
+                    viewModel.selectedFlow = .expense
+                }
             }
             
             Picker("Granularity", selection: $viewModel.selectedGranularity) {
@@ -51,7 +57,6 @@ struct ChartView: View {
 
             Chart {
                 if viewModel.aggregated.isEmpty {
-                    // Placeholder to keep axes visible when no data
                     let lower = viewModel.periodRange.lowerBound
                     let upper = viewModel.periodRange.upperBound
                     RuleMark(xStart: .value("Start", lower), xEnd: .value("End", upper))
@@ -79,7 +84,6 @@ struct ChartView: View {
                     }
                 }
             }
-            // Axes & scales
             .chartXAxis {
                 switch viewModel.selectedGranularity {
                 case .day:
@@ -124,7 +128,6 @@ struct ChartView: View {
                         let threshold: CGFloat = 40
                         let dx = value.translation.width
                         let dy = value.translation.height
-                        // Only react to predominantly horizontal drags
                         guard abs(dx) > abs(dy) else { return }
                         if dx <= -threshold {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) { viewModel.shiftPeriod(1) }

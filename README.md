@@ -1,7 +1,7 @@
 
 <div>
   <img src="https://img.shields.io/badge/iOS-26.0%2B-blue" />
-  <img src="https://img.shields.io/badge/Swift-5.9%2B-orange" />
+  <img src="https://img.shields.io/badge/Swift-6.1%2B-orange" />
   <img src="https://img.shields.io/badge/Xcode-26%2B-007ACC" />
   <img src="https://img.shields.io/badge/UIKit%20%2B%20SwiftUI-purple" />
   <img src="https://img.shields.io/badge/MVVM%20+%20Coordinator%20+%20Di%20Container-success" />

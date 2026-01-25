@@ -25,7 +25,7 @@ struct AccountsCardsListView: View {
                 TotalAccountsBalanceView(
                     currency: totalCurrency.symbol,
                     balance: viewModel.totalBalanceString,
-                    trend: .same
+                    trend: viewModel.totalSpendingTrend()
                 )
 
                 VStack(spacing: 12) {

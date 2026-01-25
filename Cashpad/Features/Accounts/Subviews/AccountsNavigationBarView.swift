@@ -22,17 +22,6 @@ struct AccountsNavigationBarView: View {
             Spacer()
 
             HStack(spacing: 16) {
-
-                IconCircleButton(
-                    systemName: "chart.line.uptrend.xyaxis",
-                    action: {
-                        guard !showAnalytics else { return }
-                        showAnalytics = true
-                    }
-                )
-                .applyIf(!showAnalytics) {
-                    $0.matchedGeometryEffect(id: "analyticsGlass", in: animation)
-                }
                 
                 IconCircleButton(
                     systemName: "gearshape",

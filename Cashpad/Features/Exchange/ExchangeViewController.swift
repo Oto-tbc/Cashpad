@@ -34,9 +34,13 @@ final class ExchangeViewController: UIViewController, UITextFieldDelegate {
         bindViewModel()
         setupTextFields()
 
+        if let popGesture = navigationController?.interactivePopGestureRecognizer {
+            popGesture.addTarget(self, action: #selector(handlePopGesture))
+        }
+
         viewModel.loadRates()
     }
-
+    
     // MARK: - Setup
 
     private func setupNavigation() {
@@ -125,7 +129,7 @@ final class ExchangeViewController: UIViewController, UITextFieldDelegate {
             .store(in: &cancellables)
     }
 
-    // MARK: - UITextFieldDelegate (CRITICAL FIX)
+    // MARK: - UITextFieldDelegate
 
     func textField(
         _ textField: UITextField,
@@ -180,6 +184,10 @@ final class ExchangeViewController: UIViewController, UITextFieldDelegate {
     @objc private func handleBack() {
         navigationController?.popViewController(animated: true)
     }
+    
+    @objc private func handlePopGesture() {
+        view.endEditing(true)
+    }
 
     private func updateCurrencyMenus(currencies: [String]) {
 
@@ -202,3 +210,4 @@ final class ExchangeViewController: UIViewController, UITextFieldDelegate {
         cardView.toCurrencyButton.showsMenuAsPrimaryAction = true
     }
 }
+

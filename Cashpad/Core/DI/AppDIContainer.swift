@@ -60,7 +60,8 @@ final class AppDIContainer {
         AccountsViewModel(
             repository: makeAccountRepository(),
             themeManager: makeThemeManager(),
-            securityService: makeSecurityService()
+            securityService: makeSecurityService(),
+            exchangeRepository: makeExchangeRepository()
         )
     }
     

@@ -19,12 +19,12 @@ struct AccountsCardsListView: View {
             VStack(spacing: 16) {
 
                 let totalCurrency = Currency(
-                    rawValue: viewModel.accounts.first?.currency ?? ""
+                    rawValue: viewModel.selectedCurrency
                 ) ?? .usd
 
                 TotalAccountsBalanceView(
                     currency: totalCurrency.symbol,
-                    balance: totalBalanceString,
+                    balance: viewModel.totalBalanceString,
                     trend: .same
                 )
 
@@ -40,8 +40,8 @@ struct AccountsCardsListView: View {
                         AccountsCardsView(
                             accountName: account.name,
                             currency: currency.symbol,
-                            balance: formattedBalance(for: account),
-                            trend: .same,
+                            balance: viewModel.formattedBalance(for: account),
+                            trend: viewModel.spendingTrend(for: account),
                             color: color,
                             icon: icon,
                             onDelete: {

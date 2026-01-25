@@ -14,12 +14,8 @@ struct SettingsModalView: View {
     @Binding var showSettings: Bool
     let animation: Namespace.ID
 
-    @State private var selectedCurrency: String = "USD"
     @State private var showClearAlert: Bool = false
     @State private var showCurrencyPicker: Bool = false
-
-    var onCurrencyChange: ((String) -> Void)?
-    var onRequireFaceIDChange: ((Bool) -> Void)?
 
     var body: some View {
         VStack(spacing: 16) {
@@ -86,8 +82,8 @@ struct SettingsModalView: View {
         .onChange(of: viewModel.selectedTheme) { _, newValue in
             viewModel.updateTheme(newValue)
         }
-        .onChange(of: selectedCurrency) { _, newValue in
-            onCurrencyChange?(newValue)
+        .onChange(of: viewModel.selectedCurrency) { _, newValue in
+            viewModel.updateCurrency(newValue)
         }
         .onChange(of: viewModel.requireFaceID) { _, newValue in
             viewModel.updateFaceID(newValue)
@@ -127,7 +123,7 @@ struct SettingsModalView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Default Currency")
                     .font(.headline)
-                Text(selectedCurrency)
+                Text(viewModel.selectedCurrency)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -144,12 +140,12 @@ struct SettingsModalView: View {
                     List {
                         ForEach(Currency.allCases, id: \.rawValue) { currency in
                             Button {
-                                selectedCurrency = currency.rawValue.uppercased()
+                                viewModel.updateCurrency(currency.rawValue.uppercased())
                                 showCurrencyPicker = false
                             } label: {
                                 HStack {
                                     Text(currency.rawValue.uppercased())
-                                    if selectedCurrency == currency.rawValue.uppercased() {
+                                    if viewModel.selectedCurrency == currency.rawValue.uppercased() {
                                         Spacer()
                                         Image(systemName: "checkmark")
                                             .foregroundStyle(.primary)

@@ -12,7 +12,6 @@ struct AccountsView: View {
     @ObservedObject var viewModel: AccountsViewModel
 
     @State private var showSettings = false
-    @State private var showAnalytics = false
     @State private var showAddAccountSheet = false
 
     @Namespace private var modalAnimation
@@ -27,7 +26,6 @@ struct AccountsView: View {
 
                 AccountsNavigationBarView(
                     showSettings: $showSettings,
-                    showAnalytics: $showAnalytics,
                     animation: modalAnimation
                 )
 
@@ -38,8 +36,8 @@ struct AccountsView: View {
 
             }
             .frame(maxWidth: .infinity)
-            .blur(radius: showSettings || showAnalytics ? 8 : 0)
-            .allowsHitTesting(!(showSettings || showAnalytics))
+            .blur(radius: showSettings ? 8 : 0)
+            .allowsHitTesting(!(showSettings))
             .navigationBarHidden(true)
             
             AddButtonView(onAction: { showAddAccountSheet = true })
@@ -50,11 +48,6 @@ struct AccountsView: View {
                     showSettings: $showSettings,
                     animation: modalAnimation
                 )
-            } else if showAnalytics {
-                AnalyticsModalView(
-                    showAnalytics: $showAnalytics,
-                    animation: modalAnimation
-                )
             }
         }
         .onAppear {
@@ -62,7 +55,7 @@ struct AccountsView: View {
         }
         .animation(
             .spring(response: 0.45, dampingFraction: 0.85),
-            value: showSettings || showAnalytics
+            value: showSettings
         )
         .background(Color("SecondaryBackground"))
         .sheet(isPresented: $showAddAccountSheet) {

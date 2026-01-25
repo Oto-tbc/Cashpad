@@ -170,12 +170,12 @@ struct SettingsModalView: View {
 
     private var faceIDRow: some View {
         HStack(spacing: 12) {
-            Image(systemName: "faceid")
+            Image(systemName: "lock.fill")
                 .foregroundStyle(.secondary)
             VStack(alignment: .leading, spacing: 2) {
-                Text("Require Face ID")
+                Text("Require Passcode")
                     .font(.headline)
-                Text("Unlock the app with Face ID")
+                Text("Unlock the app with Passcode")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }

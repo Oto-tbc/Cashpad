@@ -47,6 +47,14 @@ final class ExchangeCardView: UIView {
         fromAmountField.textContentType = .oneTimeCode
         fromAmountField.textColor = .label
         fromAmountField.placeholder = "0.00"
+        
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let flexible = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let done = UIBarButtonItem(title: "Done", style: .prominent, target: self, action: #selector(doneButtonTapped))
+        toolbar.items = [flexible, done]
+        
+        fromAmountField.inputAccessoryView = toolbar
 
         toAmountLabel.font = .systemFont(ofSize: 36, weight: .semibold)
         toAmountLabel.textColor = .label
@@ -103,6 +111,10 @@ final class ExchangeCardView: UIView {
             swapButton.heightAnchor.constraint(equalToConstant: 36),
             swapButton.widthAnchor.constraint(equalToConstant: 36)
         ])
+    }
+
+    @objc private func doneButtonTapped() {
+        endEditing(true)
     }
 
     private func makeRow(left: UIView, right: UIView) -> UIStackView {

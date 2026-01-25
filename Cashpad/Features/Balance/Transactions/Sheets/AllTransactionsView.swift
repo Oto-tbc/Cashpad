@@ -13,8 +13,8 @@ struct AllTransactionsView: View {
     
     @Binding var sheetDetent: PresentationDetent
     
-    @State private var searchText: String = ""
     @State private var showAddTransactionView: Bool = false
+    @State private var showFilterPopover = false
     @FocusState var isFocused: Bool
     
     private var isSheetExpanded: Bool {
@@ -44,7 +44,7 @@ struct AllTransactionsView: View {
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             HStack(spacing: 10) {
-                TextField("Search...", text: $searchText)
+                TextField("Search...", text: $viewModel.searchText)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 12)
                     .background {
@@ -70,8 +70,8 @@ struct AllTransactionsView: View {
                     .focused($isFocused)
                 
                 Button {
-                    if isSheetExpanded || isFocused {
-                        print("123")
+                    if isSheetExpanded {
+                        showFilterPopover.toggle()
                     } else {
                         showAddTransactionView = true
                     }
@@ -94,6 +94,18 @@ struct AllTransactionsView: View {
                                 .transition(.blurReplace)
                         }
                     }
+                }
+                .popover(isPresented: $showFilterPopover, arrowEdge: .top) {
+                    TransactionFilterView(
+                        onApply: { filter in
+                            viewModel.apply(filter: filter)
+                        },
+                        onReset: {
+                            viewModel.resetFilters()
+                        },
+                        isFilterApplied: viewModel.isFilterApplied
+                    )
+                    .presentationCompactAdaptation(.popover)
                 }
             }
             .padding(.horizontal, 18)
@@ -126,3 +138,4 @@ struct AllTransactionsView: View {
         }
     }
 }
+

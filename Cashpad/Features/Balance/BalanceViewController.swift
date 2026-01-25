@@ -47,7 +47,6 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
         fatalError("init(coder:) has not been implemented")
     }
         
-    // Setup UI, bindings, and initial data loading
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "SecondaryBackground")
@@ -62,7 +61,6 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
         viewModel.loadTransactions()
     }
     
-    // Enable interactive pop gesture when view appears
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -70,13 +68,11 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
     
-    // Clean up gesture recognizer delegation
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
     
-    // Allow interactive pop only when there is more than one VC in the stack
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return navigationController?.viewControllers.count ?? 0 > 1
     }
@@ -130,13 +126,7 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     
     private func setupBalanceView() {
         contentView.addSubview(balanceView)
-        
-        balanceView.configure(
-            account: account,
-            onBack: onBack,
-            onExchange: onExchange
-        )
-        
+                
         balanceView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             balanceView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18),
@@ -147,7 +137,6 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
     }
     
     private func setupChart() {
-        // Build ChartViewModel via DI using the selected account id
         let chartVM = AppDIContainer.shared.makeChartViewModel(accountId: account.id)
         self.chartViewModel = chartVM
         let chartView = ChartView(viewModel: chartVM)
@@ -160,7 +149,6 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
         hosting.view.backgroundColor = .clear
         
-        // Place chart below balanceView
         NSLayoutConstraint.activate([
             hosting.view.topAnchor.constraint(equalTo: balanceView.bottomAnchor, constant: 8),
             hosting.view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -182,7 +170,6 @@ final class BalanceViewController: UIViewController, UIGestureRecognizerDelegate
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
         hosting.view.backgroundColor = .clear
 
-        // Pin transactions view below chart and stretch to bottom
         NSLayoutConstraint.activate([
             hosting.view.topAnchor.constraint(equalTo: chartHostingController!.view.bottomAnchor, constant: 12),
             hosting.view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),

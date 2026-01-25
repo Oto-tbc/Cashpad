@@ -11,7 +11,6 @@ struct TransactionRow: View {
     let transaction: Transaction
     var body: some View {
         HStack(spacing: 12) {
-            // Leading indicator: plus/minus
             Circle()
                 .fill((transaction.type == 0) ? Color.green.opacity(0.2) : Color.red.opacity(0.2))
                 .frame(width: 36, height: 36)

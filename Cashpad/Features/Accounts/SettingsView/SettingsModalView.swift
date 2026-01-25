@@ -24,7 +24,6 @@ struct SettingsModalView: View {
     var body: some View {
         VStack(spacing: 16) {
 
-            // Header
             HStack {
                 Button {
                     showSettings = false
@@ -46,22 +45,17 @@ struct SettingsModalView: View {
 
             Divider()
 
-            // Content
             VStack(spacing: 20) {
 
-                // Theme
                 SectionHeader(title: "Appearance")
                 themeRow
 
-                // Currency
                 SectionHeader(title: "Currency")
                 currencyRow
 
-                // Privacy
                 SectionHeader(title: "Privacy")
                 faceIDRow
 
-                // Danger zone
                 SectionHeader(title: "Danger Zone")
                 clearAccountsRow
             }

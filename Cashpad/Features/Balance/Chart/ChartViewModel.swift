@@ -66,7 +66,6 @@ final class ChartViewModel: ObservableObject {
     private var cachedAggregated: [PeriodKey: [(date: Date, total: Double)]] = [:]
 
     // MARK: - Derived Data
-    /// Transactions filtered by flow (income/expense)
     var filtered: [Transaction] {
         let type = (selectedFlow == .income) ? 0 : 1
         return transactions
@@ -102,13 +101,11 @@ final class ChartViewModel: ObservableObject {
         }
     }
 
-    /// Transactions within the currently selected period
     var periodFiltered: [Transaction] {
         let r = periodRange
         return filtered.filter { r.contains($0.date ?? Date.distantPast) }
     }
     
-    /// Total income within the current period
     var periodIncomeTotal: Double {
         transactions
             .filter { Int($0.type) == 0 }
@@ -116,7 +113,6 @@ final class ChartViewModel: ObservableObject {
             .reduce(0) { $0 + $1.amount }
     }
     
-    /// Total expenses within the current period
     var periodExpenseTotal: Double {
         transactions
             .filter { Int($0.type) == 1 }
@@ -124,12 +120,10 @@ final class ChartViewModel: ObservableObject {
             .reduce(0) { $0 + abs($1.amount) }
     }
 
-    /// Net (income - expenses) within the current period
     var periodNetTotal: Double {
         periodIncomeTotal - periodExpenseTotal
     }
 
-    /// Total for the currently selected flow within the current period
     var periodSelectedFlowTotal: Double {
         switch selectedFlow {
         case .income: return periodIncomeTotal
@@ -137,7 +131,6 @@ final class ChartViewModel: ObservableObject {
         }
     }
 
-    /// Aggregated totals per bucketed date for the current granularity
     var aggregated: [(date: Date, total: Double)] {
         let key = PeriodKey(flow: selectedFlow, granularity: selectedGranularity, anchorDay: normalizedAnchorStart())
         if let cached = cachedAggregated[key] {
@@ -148,14 +141,11 @@ final class ChartViewModel: ObservableObject {
             let date = tx.date ?? Date()
             switch selectedGranularity {
             case .day:
-                // bucket by hour of the day
                 let comps = calendar.dateComponents([.year, .month, .day, .hour], from: date)
                 return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
             case .week:
-                // bucket by day within the week (start of day)
                 return calendar.startOfDay(for: date)
             case .year:
-                // bucket by month within the year (first of month)
                 let comps = calendar.dateComponents([.year, .month], from: date)
                 return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
             }
@@ -176,7 +166,6 @@ final class ChartViewModel: ObservableObject {
     }
 
     // MARK: - Intent
-    /// Move the anchor date forward/backward by one unit of the current granularity
     func shiftPeriod(_ delta: Int) {
         let cal = Calendar.current
         cachedAggregated.removeAll()

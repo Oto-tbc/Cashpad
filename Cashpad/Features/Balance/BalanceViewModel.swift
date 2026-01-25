@@ -184,22 +184,18 @@ final class BalanceViewModel: ObservableObject {
         transactions = originalTransactions.filter { transaction in
             guard let transactionDate = transaction.date else { return false }
             
-            // Start date (inclusive at start of day)
             if let start = filter.startDate {
                 let startDay = calendar.startOfDay(for: start)
                 if transactionDate < startDay { return false }
             }
             
-            // End date (inclusive through end of day)
             if let end = filter.endDate {
                 let endDay = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: end) ?? end
                 if transactionDate > endDay { return false }
             }
             
-            // Min amount
             if let min = filter.minAmount, transaction.amount < min { return false }
             
-            // Max amount
             if let max = filter.maxAmount, transaction.amount > max { return false }
             
             return true

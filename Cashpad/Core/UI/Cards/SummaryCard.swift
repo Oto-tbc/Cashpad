@@ -34,8 +34,6 @@ struct summaryCard: View {
         .animation(.snappy, value: isSelected)
     }
 
-    // MARK: - Extracted pieces (clean & readable)
-
     private var background: some View {
         RoundedRectangle(cornerRadius: 12, style: .continuous)
             .fill(isSelected ? Color.gray.opacity(0.15) : Color.gray.opacity(0.07))

@@ -22,7 +22,6 @@ final class ExchangeService: ExchangeServiceProtocol {
     }
     
     func fetchLatestRates(base: String) async throws -> ExchangeRate {
-        print("🔑 API KEY USED:", apiKey)
 
         var components = URLComponents(
             string: "https://api.freecurrencyapi.com/v1/latest"
@@ -35,9 +34,6 @@ final class ExchangeService: ExchangeServiceProtocol {
             throw URLError(.badURL)
         }
         
-        print("🌍 FULL REQUEST URL:")
-        print(url.absoluteString)
-
         let (data, response) = try await session.data(from: url)
 
         guard let http = response as? HTTPURLResponse else {
@@ -45,9 +41,6 @@ final class ExchangeService: ExchangeServiceProtocol {
         }
 
         if http.statusCode != 200 {
-            let body = String(data: data, encoding: .utf8) ?? "No body"
-            print("❌ HTTP Status:", http.statusCode)
-            print("❌ Response body:", body)
             throw URLError(.badServerResponse)
         }
 

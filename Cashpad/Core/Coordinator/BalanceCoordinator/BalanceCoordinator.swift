@@ -31,9 +31,7 @@ final class BalanceCoordinator: Coordinator {
         let balanceViewModel = diContainer.makeBalanceViewModel(
             accountId: account.id
         )
-        
-        let exchangeViewModel = diContainer.makeExchangeViewModel()
-                
+                        
         let vc = BalanceViewController(
             account: account,
             viewModel: balanceViewModel,
@@ -43,6 +41,8 @@ final class BalanceCoordinator: Coordinator {
             },
             onExchange: { [weak self] in
                 guard let self = self else { return }
+                
+                let exchangeViewModel = diContainer.makeExchangeViewModel()
                 let exchangeVC = ExchangeViewController(viewModel: exchangeViewModel)
                 self.navigationController.pushViewController(exchangeVC, animated: true)
             }

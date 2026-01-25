@@ -18,6 +18,21 @@ Built with a clean, minimal interface and smooth animations, Cashpad makes manag
 - **Smart Balance Overview** - Always see your current balance at a glance
 - **Visual Analytics** - Clean, readable charts designed for clarity
 
+## Screenshots
+
+<p>
+  <img src="./Screenshots/scr1.jpg" width="150" />
+  <img src="./Screenshots/scr2.jpg" width="150" />
+  <img src="./Screenshots/scr3.jpg" width="150" />
+  <img src="./Screenshots/scr4.jpg" width="150" />
+  <img src="./Screenshots/scr5.jpg" width="150" />
+</p>
+
+<p>
+  <img src="./Screenshots/scr6.jpg" width="150" />
+  <img src="./Screenshots/scr7.jpg" width="150" />
+</p>
+
 ## Technologies Used
 
 - **Swift** - Primary programming language
